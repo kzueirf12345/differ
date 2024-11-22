@@ -3,6 +3,7 @@
 
 #include "logger/liblogger.h"
 #include "flags/flags.h"
+#include "tree/tree_funcs.h"
 
 int init_all(flags_objs_t* const flags_objs, const int argc, char* const * argv);
 int dtor_all(flags_objs_t* const flags_objs);
@@ -16,6 +17,35 @@ int main(const int argc, char* const argv[])
         fprintf(stderr, "Can't init all\n");
         return EXIT_FAILURE;
     }
+
+    tree_t* const div  = tree_ctor(OP_TYPE_DIV, NODE_TYPE_OP, NULL, NULL, NULL);
+    fprintf(stderr, "div: %p\n", div);
+
+    tree_t* const sub  = tree_ctor(OP_TYPE_SUB, NODE_TYPE_OP, div, NULL, NULL);
+    tree_t* const mul  = tree_ctor(OP_TYPE_MUL, NODE_TYPE_OP, div, NULL, NULL);
+
+
+    tree_t* const x    = tree_ctor(1,    NODE_TYPE_VAR, mul, NULL, NULL);
+    tree_t* const num1 = tree_ctor(3,    NODE_TYPE_NUM, mul, NULL, NULL);
+    tree_t* const num2 = tree_ctor(1000, NODE_TYPE_NUM, sub, NULL, NULL);
+    tree_t* const num3 = tree_ctor(7,    NODE_TYPE_NUM, sub, NULL, NULL);
+    
+    mul->lt = x;
+    mul->rt = num1;
+    mul->size += 2;
+
+    sub->lt = num2;
+    sub->rt = num3;
+    sub->size += 2;
+
+    div->lt = mul;
+    div->rt = sub;
+    div->size += mul->size + sub->size;
+
+    fprintf(stderr, "div: %p\n", div);
+
+    tree_dumb(div);
+    tree_dtor(div);
     
     printf("Hello, World!\n");
 
@@ -26,6 +56,8 @@ int main(const int argc, char* const argv[])
     }
     return EXIT_SUCCESS;
 }
+
+//==================================================================================================
 
 int logger_init(char* const log_folder);
 
@@ -55,6 +87,7 @@ int init_all(flags_objs_t* const flags_objs, const int argc, char* const * argv)
 int dtor_all(flags_objs_t* const flags_objs)
 {
     LOGG_ERROR_HANDLE(                                                               logger_dtor());
+    TREE_DUMB_ERROR_HANDLE(                                                       tree_dumb_dtor());
     FLAGS_ERROR_HANDLE(                                                flags_objs_dtor(flags_objs));
     return EXIT_SUCCESS;
 }
@@ -83,6 +116,9 @@ int logger_init(char* const log_folder)
     LOGG_ERROR_HANDLE(logger_ctor());
     LOGG_ERROR_HANDLE(logger_set_level_details(LOG_LEVEL_DETAILS_ALL));
     LOGG_ERROR_HANDLE(logger_set_logout_file(logout_filename));
+
+    TREE_DUMB_ERROR_HANDLE(tree_dumb_ctor());
+    TREE_DUMB_ERROR_HANDLE(tree_dumb_set_out_file(dumb_filename));
     
     return EXIT_SUCCESS;
 }

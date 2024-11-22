@@ -59,4 +59,8 @@ dkms.conf
 *.log
 CMakePresets.json
 
+dumb_graph_count.txt
+dumb.dot
+
+
 doxygen

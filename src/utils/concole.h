@@ -1,5 +1,5 @@
-#ifndef SRC_CONSOLE_H
-#define SRC_CONSOLE_H
+#ifndef DIFFER_SRC_UTILS_CONSOLE_H
+#define DIFFER_SRC_UTILS_CONSOLE_H
 
 /// @brief Нормальное форматирование строки при выводе в консоль escape-последовательностью
 #define NORMAL_FORMAT "\e[0m"
@@ -36,4 +36,4 @@
 #define ITALIC_TEXT(...) ITALIC_FORMAT __VA_ARGS__ NORMAL_FORMAT
 
 
-#endif /* SRC_CONSOLE_H */
+#endif /* DIFFER_SRC_UTILS_CONSOLE_H */
