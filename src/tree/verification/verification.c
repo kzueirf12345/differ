@@ -30,7 +30,7 @@ const char* tree_strerror(const enum TreeError error)
 
 #ifndef NDEBUG
 
-static size_t  size_counter_ = 0;
+static size_t        size_counter_ = 0;
 static const tree_t* start_node_   = NULL;
 
 enum TreeError tree_verify_NOT_USE(const tree_t* const tree)
@@ -76,7 +76,7 @@ enum TreeError tree_verify_NOT_USE(const tree_t* const tree)
         TREE_ERROR_HANDLE(tree_verify_NOT_USE(tree->lt));
     }
 
-    cur_size = size_counter_;
+    cur_size += size_counter_;
                size_counter_ = 0;
 
     if (tree->rt)
@@ -84,9 +84,9 @@ enum TreeError tree_verify_NOT_USE(const tree_t* const tree)
         if (tree->rt->pt != tree)
             return TREE_ERROR_RT_PT_INCORRECT;
             
-        TREE_ERROR_HANDLE(tree_verify_NOT_USE(tree->lt));
+        TREE_ERROR_HANDLE(tree_verify_NOT_USE(tree->rt));
     }
-
+    
     cur_size += size_counter_ + 1;
                 size_counter_ = cur_size;
 
@@ -96,7 +96,7 @@ enum TreeError tree_verify_NOT_USE(const tree_t* const tree)
     if (start_node_ == tree)
     {
         size_counter_ = 0;
-        start_node_  = NULL;
+        start_node_   = NULL;
     }   
 
     return TREE_ERROR_SUCCESS;

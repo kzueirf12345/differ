@@ -351,24 +351,26 @@ int create_tree_dot_(const tree_t* const tree)
 
     node_count_ = 0;
     if (create_tree_dot_recursive_(tree, tree->size, node_count_ + 1))
+    {
+        fprintf(stderr, "Can't create tree dot recursive\n");
         return -1;
+    }
 
     fprintf(DUMBER_.dot_file, "}\n");
 
     return 0;
 }
 
-int dot_print_node_(const int data, const enum NodeType data_type);
+int dot_print_node_(const int data, const enum NodeType data_type, const size_t size);
 
 int create_tree_dot_recursive_(const tree_t* const tree, const size_t tree_size, size_t parent_num)
 {
     if (is_invalid_ptr(tree))           return -1;
-    if (node_count_ > tree_size)        return -1;
+    if (node_count_ > tree_size)        return 0;
 
     ++node_count_;
 
-    if (dot_print_node_(tree->data, tree->type))
-        return -1;
+    dot_print_node_(tree->data, tree->type, tree->size);
 
     if (!is_invalid_ptr(tree->pt))
     {
@@ -395,24 +397,24 @@ int create_tree_dot_recursive_(const tree_t* const tree, const size_t tree_size,
     return 0;
 }
 
-int dot_print_node_(const int data, const enum NodeType data_type)
+int dot_print_node_(const int data, const enum NodeType data_type, const size_t size)
 {
     switch (data_type)
     {
     case NODE_TYPE_NUM:
         fprintf(DUMBER_.dot_file, 
-                "node%zu [shape=Mrecord; label = \"{{%zu|%s}|%d}\"; fillcolor = pink];\n",
-                node_count_, node_count_, node_type_to_str(data_type), data);
+                "node%zu [shape=Mrecord; label = \"{{%zu|%s|size=%zu}|%d}\"; fillcolor = pink];\n",
+                node_count_, node_count_, node_type_to_str(data_type), size, data);
         break;
     case NODE_TYPE_VAR: //TODO more vars
         fprintf(DUMBER_.dot_file, 
-                "node%zu [shape=Mrecord; label = \"{{%zu|%s}|x}\"; fillcolor = lightyellow];\n",
-                node_count_, node_count_, node_type_to_str(data_type));
+                "node%zu [shape=Mrecord; label = \"{{%zu|%s|size=%zu}|x}\"; fillcolor = lightyellow];\n",
+                node_count_, node_count_, node_type_to_str(data_type), size);
         break;
     case NODE_TYPE_OP:
         fprintf(DUMBER_.dot_file, 
-                "node%zu [shape=Mrecord; label = \"{{%zu|%s}|%s}\"; fillcolor = peachpuff];\n",
-                node_count_, node_count_, node_type_to_str(data_type), 
+                "node%zu [shape=Mrecord; label = \"{{%zu|%s|size=%zu}|%s}\"; fillcolor = peachpuff];\n",
+                node_count_, node_count_, node_type_to_str(data_type), size, 
                 op_type_to_str((enum OpType)data));
         break;
     default:

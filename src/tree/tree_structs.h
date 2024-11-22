@@ -2,6 +2,7 @@
 #define DIFFER_SRC_TREE_TREE_STRUCTS_H
 
 #include <stdio.h>
+#include <assert.h>
 
 enum NodeType
 {
@@ -34,7 +35,10 @@ enum OpType
     OP_TYPE_CTH     = 'c' + 't' + 'h',
 
     OP_TYPE_LOG     = 'l',
+
+    OP_TYPE_UNKNOWN = 0
 };
+static_assert(OP_TYPE_UNKNOWN == 0);
 
 typedef struct Tree
 { 

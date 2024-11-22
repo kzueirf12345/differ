@@ -49,6 +49,7 @@ enum TreeError tree_verify_NOT_USE(const tree_t* const tree);
             if (error)                                                                              \
             {                                                                                       \
                 tree_dumb(tree);                                                                    \
+                tree_dumb_dtor();                                                                   \
                 lassert(false, "Tree error: %s", tree_strerror(error));                             \
             }                                                                                       \
         } while(0)

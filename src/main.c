@@ -43,11 +43,53 @@ int main(const int argc, char* const argv[])
 
     // tree_dumb(div);
 
-    TREE_ERROR_HANDLE(tree_print_preorder(stdout, div),     tree_dtor(div), dtor_all(&flags_objs););
-    printf("\n");
-    TREE_ERROR_HANDLE(tree_print_inorder(stdout, div),      tree_dtor(div), dtor_all(&flags_objs););
+    // FILE* file = fopen("./assets/baze.txt", "wb");
+    // if (!file)
+    // {
+    //     perror("Can't fopen file");
+    //     return EXIT_FAILURE;
+    // }
+    // TREE_ERROR_HANDLE(tree_print_preorder(file, div),     
+    //                                                           tree_dtor(div), dtor_all(&flags_objs);
+    // );
+
+    // printf("\n");
+    // TREE_ERROR_HANDLE(tree_print_inorder(stdout, div),        tree_dtor(div), dtor_all(&flags_objs);
+    // );
+
+    // if (fclose(file))
+    // {
+    //     perror("Can't fclose file");
+    //     return EXIT_FAILURE;
+    // }
+    // file = NULL;
+
+    tree_t* temp = NULL;
+    TREE_ERROR_HANDLE(tree_read_inorder("./assets/baze1.txt", &temp),
+                                             tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
+    );
+
+    tree_dumb(temp);
+
+    FILE* file = fopen("./assets/baze2.txt", "wb");
+    if (!file)
+    {
+        perror("Can't fopen file");
+        return EXIT_FAILURE;
+    }
+    TREE_ERROR_HANDLE(tree_print_inorder(file, temp),     
+                                            tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
+    );
+    if (fclose(file))
+    {
+        perror("Can't fclose file");
+        return EXIT_FAILURE;
+    }
+
+
 
     tree_dtor(div);
+    tree_dtor(temp);
 
     if (dtor_all(&flags_objs))
     {
