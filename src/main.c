@@ -71,13 +71,13 @@ int main(const int argc, char* const argv[])
 
     tree_dumb(temp);
 
-    FILE* file = fopen("./assets/baze2.txt", "wb");
+    FILE* file = fopen("./assets/temp.tex", "wb");
     if (!file)
     {
         perror("Can't fopen file");
         return EXIT_FAILURE;
     }
-    TREE_ERROR_HANDLE(tree_print_inorder(file, temp),     
+    TREE_ERROR_HANDLE(tree_print_tex(file, temp),     
                                             tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
     );
     if (fclose(file))

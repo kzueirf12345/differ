@@ -62,5 +62,8 @@ CMakePresets.json
 dumb_graph_count.txt
 dumb.dot
 
+*.aux
+assets/*.log
+
 
 doxygen

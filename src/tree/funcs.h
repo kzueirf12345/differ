@@ -14,6 +14,7 @@ void    tree_dtor(tree_t* const tree);
 
 enum TreeError tree_print_preorder(FILE* out, const tree_t* const tree);
 enum TreeError tree_print_inorder (FILE* out, const tree_t* const tree);
+enum TreeError tree_print_tex     (FILE* out, const tree_t* const tree);
 enum TreeError tree_read_preorder (const char* const in_name, tree_t** tree);
 enum TreeError tree_read_inorder  (const char* const in_name, tree_t** tree);
 

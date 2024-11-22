@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #include "tree/funcs.h"
 #include "logger/liblogger.h"
@@ -66,6 +67,159 @@ enum TreeError tree_print_inorder(FILE* out, const tree_t* const tree)
     }
 
     return TREE_ERROR_SUCCESS;
+}
+
+bool add_braket(const tree_t* const tree);
+
+enum TreeError tree_print_tex_recursive_(FILE* out, const tree_t* const tree);
+
+enum TreeError tree_print_tex (FILE* out, const tree_t* const tree)
+{
+    if (!tree) return TREE_ERROR_SUCCESS;
+
+    TREE_VERIFY(tree);
+    lassert(!is_invalid_ptr(out), "");
+
+    fprintf(out, "\\documentclass[a4paper]{article}\n"
+                 "\\begin{document}\n"
+                 "\\[\n");
+    
+    TREE_ERROR_HANDLE(tree_print_tex_recursive_(out, tree));
+
+    fprintf(out, "\n\\]\n"
+                 "\\end{document}\n");
+
+    return TREE_ERROR_SUCCESS;
+}
+enum TreeError tree_print_tex_recursive_(FILE* out, const tree_t* const tree)
+{
+    if (!tree) return TREE_ERROR_SUCCESS;
+
+    TREE_VERIFY(tree);
+    lassert(!is_invalid_ptr(out), "");
+
+    const bool do_add_braket = add_braket(tree);
+    const bool is_div = (tree->type == NODE_TYPE_OP && (enum OpType)tree->data == OP_TYPE_DIV);
+    const bool is_log = (tree->type == NODE_TYPE_OP && (enum OpType)tree->data == OP_TYPE_LOG);
+    const bool is_pow = (tree->type == NODE_TYPE_OP && (enum OpType)tree->data == OP_TYPE_POW);
+
+    if (do_add_braket && fputs("\\left(", out) < 0)
+    {
+        perror("Can't fprintf (");
+        return TREE_ERROR_STANDARD_ERRNO;
+    }
+
+
+    if (is_div && fputs("\\frac{", out) < 0)
+    {
+        perror("Can't fputs frac");
+        return TREE_ERROR_STANDARD_ERRNO;
+    }
+
+    if (is_log && fputs("\\log_{", out) < 0)
+    {
+        perror("Can't fputs log");
+        return TREE_ERROR_STANDARD_ERRNO;
+    }
+
+    TREE_ERROR_HANDLE(tree_print_tex_recursive_(out, tree->lt));
+
+    if ((is_div || is_log) && fputs("}", out) < 0)
+    {
+        perror("Can't fpruts } 1");
+        return TREE_ERROR_STANDARD_ERRNO;
+    } 
+
+    if (!is_div && !is_log)
+    {
+        TREE_ERROR_HANDLE(tree_print_data_(out, tree->data, tree->type));
+    }
+
+    if ((is_div || is_pow) && fputs("{", out) < 0)
+    {
+        perror("Can't fpruts {");
+        return TREE_ERROR_STANDARD_ERRNO;
+    } 
+
+    TREE_ERROR_HANDLE(tree_print_tex_recursive_(out, tree->rt));
+
+    if ((is_div || is_pow) && fputs("}", out) < 0)
+    {
+        perror("Can't fpruts } 2");
+        return TREE_ERROR_STANDARD_ERRNO;
+    } 
+
+
+    if (do_add_braket && fputs("\\right)", out) < 0)
+    {
+        perror("Can't fprintf )");
+        return TREE_ERROR_STANDARD_ERRNO;
+    }
+
+    return TREE_ERROR_SUCCESS;
+}
+
+bool add_braket(const tree_t* const tree)
+{
+    TREE_VERIFY(tree);
+
+    if (tree->pt   == tree)         return false;
+    if (tree->type != NODE_TYPE_OP) return false;
+
+    switch ((enum OpType)tree->pt->data)
+    {
+    case OP_TYPE_SIN:
+    case OP_TYPE_COS:
+    case OP_TYPE_TG:
+    case OP_TYPE_CTG:
+    case OP_TYPE_ASIN:
+    case OP_TYPE_ACOS:
+    case OP_TYPE_ATG:
+    case OP_TYPE_ACTG:
+    case OP_TYPE_SH:
+    case OP_TYPE_CH:
+    case OP_TYPE_TH:
+    case OP_TYPE_CTH:
+    {
+        return (tree->type == NODE_TYPE_OP) && ((enum OpType)tree->data != OP_TYPE_DIV);
+    }
+
+    case OP_TYPE_LOG:
+    {
+        return tree->pt->rt == tree;
+    }
+
+    case OP_TYPE_SUB:
+    {
+        return (tree->pt->rt == tree) && (tree->type == NODE_TYPE_OP) 
+            && (((enum OpType)tree->data == OP_TYPE_SUM) 
+            ||  ((enum OpType)tree->data == OP_TYPE_SUB));
+    }
+
+    case OP_TYPE_SUM:
+    case OP_TYPE_DIV:
+        return false;
+
+    case OP_TYPE_MUL:
+    {
+        return (tree->type == NODE_TYPE_OP) 
+            && (((enum OpType)tree->data == OP_TYPE_SUM) 
+            ||  ((enum OpType)tree->data == OP_TYPE_SUB));
+    }
+
+    case OP_TYPE_POW:
+    {
+        return (tree->pt->lt == tree) && (tree->type == NODE_TYPE_OP);
+    }
+
+    case OP_TYPE_UNKNOWN:
+        return true;
+    
+    default:
+        return true;
+    }
+
+    return true;
 }
 
 static enum TreeError tree_print_data_(FILE* out, const int data, enum NodeType type)
