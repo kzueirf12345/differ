@@ -19,7 +19,6 @@ int main(const int argc, char* const argv[])
     }
 
     tree_t* const div  = tree_ctor(OP_TYPE_DIV, NODE_TYPE_OP, NULL, NULL, NULL);
-    fprintf(stderr, "div: %p\n", div);
 
     tree_t* const sub  = tree_ctor(OP_TYPE_SUB, NODE_TYPE_OP, div, NULL, NULL);
     tree_t* const mul  = tree_ctor(OP_TYPE_MUL, NODE_TYPE_OP, div, NULL, NULL);
@@ -42,12 +41,13 @@ int main(const int argc, char* const argv[])
     div->rt = sub;
     div->size += mul->size + sub->size;
 
-    fprintf(stderr, "div: %p\n", div);
+    // tree_dumb(div);
 
-    tree_dumb(div);
+    TREE_ERROR_HANDLE(tree_print_preorder(stdout, div),     tree_dtor(div), dtor_all(&flags_objs););
+    printf("\n");
+    TREE_ERROR_HANDLE(tree_print_inorder(stdout, div),      tree_dtor(div), dtor_all(&flags_objs););
+
     tree_dtor(div);
-    
-    printf("Hello, World!\n");
 
     if (dtor_all(&flags_objs))
     {
