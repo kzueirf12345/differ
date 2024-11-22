@@ -3,7 +3,7 @@
 
 #include <assert.h>
 
-#include "tree/tree_structs.h"
+#include "tree/structs.h"
 #include "utils/utils.h"
 
 enum TreeDumbError

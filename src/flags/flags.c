@@ -1,7 +1,7 @@
 #include <string.h>
 #include <getopt.h>
 
-#include "flags.h"
+#include "flags/flags.h"
 #include "logger/liblogger.h"
 #include "utils/utils.h"
 

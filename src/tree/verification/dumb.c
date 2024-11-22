@@ -4,10 +4,10 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "dumb.h"
+#include "tree/verification/dumb.h"
 #include "utils/utils.h"
 #include "logger/liblogger.h"
-#include "tree/tree_funcs.h"
+#include "tree/funcs.h"
 
 static const char* const HTML_INTRO_ =
     "\n<!DOCTYPE html>\n"

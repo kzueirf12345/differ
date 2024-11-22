@@ -3,7 +3,7 @@
 
 #include "logger/liblogger.h"
 #include "flags/flags.h"
-#include "tree/tree_funcs.h"
+#include "tree/funcs.h"
 
 int init_all(flags_objs_t* const flags_objs, const int argc, char* const * argv);
 int dtor_all(flags_objs_t* const flags_objs);

@@ -3,8 +3,8 @@
 
 #include <assert.h>
 
-#include "tree/tree_structs.h"
-#include "dumb.h"
+#include "tree/structs.h"
+#include "tree/verification/dumb.h"
 
 enum TreeError
 {

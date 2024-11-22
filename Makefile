@@ -50,8 +50,8 @@ LIBS = -L./libs/logger -llogger
 DIRS = utils flags tree tree/verification
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
-SOURCES = main.c utils/utils.c flags/flags.c tree/tree_funcs.c tree/verification/verification.c \
-		  tree/verification/dumb.c
+SOURCES = main.c utils/utils.c flags/flags.c tree/funcs.c tree/verification/verification.c \
+		  tree/verification/dumb.c tree/inout.c
 
 SOURCES_REL_PATH = $(SOURCES:%=$(SRC_DIR)/%)
 OBJECTS_REL_PATH = $(SOURCES:%.c=$(BUILD_DIR)/%.o)
