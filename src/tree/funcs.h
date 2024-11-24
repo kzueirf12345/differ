@@ -11,6 +11,7 @@ enum OpType   str_to_op_type(const char* const str);
 tree_t* tree_ctor(int data, enum NodeType type, 
                   tree_t* const pt, tree_t* const lt, tree_t* const rt);
 void    tree_dtor(tree_t* const tree);
+tree_t* tree_copy(const tree_t* const tree);
 
 enum TreeError tree_print_preorder(FILE* out, const tree_t* const tree);
 enum TreeError tree_print_inorder (FILE* out, const tree_t* const tree);

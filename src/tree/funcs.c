@@ -55,6 +55,8 @@ const char* op_type_to_str(const enum OpType type)
 
 enum OpType str_to_op_type(const char* const str)
 {
+    lassert(!is_invalid_ptr(str), "");
+
     if (strncmp("+",        str, sizeof("+")        - 1)   == 0)   return OP_TYPE_SUM;
     if (strncmp("-",        str, sizeof("-")        - 1)   == 0)   return OP_TYPE_SUB;
     if (strncmp("*",        str, sizeof("*")        - 1)   == 0)   return OP_TYPE_MUL;
@@ -138,3 +140,41 @@ void tree_dtor(tree_t* const tree)
 
     free(tree);
 }
+
+tree_t* tree_copy_recursive_(const tree_t* const tree, tree_t* const pt);
+
+tree_t* tree_copy(const tree_t* const tree)
+{
+    TREE_VERIFY(tree);
+
+    tree_t* const new_tree = tree_copy_recursive_(tree, NULL);
+
+    TREE_VERIFY(new_tree);
+
+    return new_tree;
+}
+
+tree_t* tree_copy_recursive_(const tree_t* const tree, tree_t* const pt)
+{
+    if (tree == NULL) return NULL;
+
+    TREE_VERIFY(tree);
+
+    tree_t* const new_tree = tree_ctor(tree->data, tree->type, pt, NULL, NULL);
+
+    if (!new_tree)
+    {
+        fprintf(stderr, "Can't ctor new tree\n");
+        return NULL;
+    } 
+
+    new_tree->size = tree->size;
+
+    new_tree->lt = tree_copy_recursive_(tree->lt, new_tree);
+    new_tree->rt = tree_copy_recursive_(tree->rt, new_tree);
+
+    TREE_VERIFY(new_tree);
+
+    return new_tree;
+}
+

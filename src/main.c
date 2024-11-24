@@ -69,16 +69,25 @@ int main(const int argc, char* const argv[])
                                              tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
     );
 
-    tree_dumb(temp);
+
+    tree_t* new_temp = tree_copy(temp);
+    if (!new_temp)
+    {
+        fprintf(stderr, "Can't tree copy temp\n");
+        tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
+        return EXIT_FAILURE;
+    }
+    tree_dumb(new_temp);
 
     FILE* file = fopen("./assets/temp.tex", "wb");
     if (!file)
     {
         perror("Can't fopen file");
+        tree_dtor(new_temp); tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
         return EXIT_FAILURE;
     }
     TREE_ERROR_HANDLE(tree_print_tex(file, temp),     
-                                            tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
+                        tree_dtor(new_temp); tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
     );
     if (fclose(file))
     {
@@ -90,6 +99,7 @@ int main(const int argc, char* const argv[])
 
     tree_dtor(div);
     tree_dtor(temp);
+    tree_dtor(new_temp);
 
     if (dtor_all(&flags_objs))
     {

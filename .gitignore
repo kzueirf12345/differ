@@ -63,6 +63,9 @@ dumb_graph_count.txt
 dumb.dot
 
 *.aux
+*.fls
+*.fdb_latexmk
+*.gz
 assets/*.log
 
 
