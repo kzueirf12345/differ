@@ -81,12 +81,21 @@ enum TreeError tree_print_tex (FILE* out, const tree_t* const tree)
     lassert(!is_invalid_ptr(out), "");
 
     fprintf(out, "\\documentclass[a4paper]{article}\n"
+                 "\\usepackage{amsmath}\n"
+                 "\\usepackage{graphicx}\n"
+                 "\\usepackage{longtable}\n"
+                 "\\usepackage{lscape}\n"
+                 "\n"
                  "\\begin{document}\n"
-                 "\\[\n");
+                 "\\begin{landscape}\n"
+                 "\\begin{longtable}{c}\n"
+                 "\\rotatebox{270}{\n$\n");
     
     TREE_ERROR_HANDLE(tree_print_tex_recursive_(out, tree));
 
-    fprintf(out, "\n\\]\n"
+    fprintf(out, "\n$}\n"
+                 "\\end{longtable}\n"
+                 "\\end{landscape}\n"
                  "\\end{document}\n");
 
     return TREE_ERROR_SUCCESS;
@@ -108,7 +117,6 @@ enum TreeError tree_print_tex_recursive_(FILE* out, const tree_t* const tree)
         perror("Can't fprintf (");
         return TREE_ERROR_STANDARD_ERRNO;
     }
-
 
     if (is_div && fputs("\\frac{", out) < 0)
     {
@@ -133,6 +141,15 @@ enum TreeError tree_print_tex_recursive_(FILE* out, const tree_t* const tree)
     if (!is_div && !is_log)
     {
         TREE_ERROR_HANDLE(tree_print_data_(out, tree->data, tree->type));
+        // //FIXME
+        // if (tree->type == NODE_TYPE_OP 
+        //  && ((enum OpType)tree->data == OP_TYPE_MUL
+        //   || (enum OpType)tree->data == OP_TYPE_SUB
+        //   || (enum OpType)tree->data == OP_TYPE_SUM))
+        // {
+        //     fputs("\n\\]\n\\[", out);
+        //     TREE_ERROR_HANDLE(tree_print_data_(out, tree->data, tree->type));
+        // }
     }
 
     if ((is_div || is_pow) && fputs("{", out) < 0)
@@ -163,8 +180,16 @@ bool add_braket(const tree_t* const tree)
 {
     TREE_VERIFY(tree);
 
-    if (tree->pt   == tree)         return false;
-    if (tree->type != NODE_TYPE_OP) return false;
+    if (tree->pt == tree)
+        return false;
+
+    if (tree->type != NODE_TYPE_OP)
+    {
+        if (tree->type == NODE_TYPE_NUM && tree->data < 0)
+            return true;
+        
+        return false;
+    }
 
     switch ((enum OpType)tree->pt->data)
     {
@@ -229,7 +254,15 @@ static enum TreeError tree_print_data_(FILE* out, const int data, enum NodeType 
     switch (type)
     {
     case NODE_TYPE_NUM:
-        if (fprintf(out, "%d", data) <= 0)
+        if (data == E_NUM)
+        {
+            if (fprintf(out, "e") <= 0)
+            {
+                perror("Can't fprintf data e");
+                return TREE_ERROR_STANDARD_ERRNO;
+            }
+        }
+        else if (fprintf(out, "%d", data) <= 0)
         {
             perror("Can't fprintf data");
             return TREE_ERROR_STANDARD_ERRNO;
@@ -321,7 +354,14 @@ enum TreeError tree_read_preorder_from_str_(char** cur_str, tree_t** tree, tree_
         // fprintf(stderr, "str_data: %s\n", str_data);
         if (str_data[1] == '\0' && isalpha(str_data[0]))
         {
-            *tree = tree_ctor((int)str_data[0], NODE_TYPE_VAR, pt, NULL, NULL);
+            if (str_data[0] == 'e')
+            {
+                *tree = tree_ctor(E_NUM, NODE_TYPE_NUM, pt, NULL, NULL);
+            }
+            else
+            {
+                *tree = tree_ctor((int)str_data[0], NODE_TYPE_VAR, pt, NULL, NULL);
+            }
         }
         else
         {
@@ -398,9 +438,18 @@ enum TreeError tree_read_inorder_from_str_(char** cur_str, tree_t** tree, tree_t
         // fprintf(stderr, "str_data: %s\n", str_data);
         if (str_data[1] == '\0' && isalpha(str_data[0]))
         {
-            (*tree)->data = (int)str_data[0];
-            (*tree)->type = NODE_TYPE_VAR;
-            (*tree)->pt   = (pt ? pt : *tree);
+            if (str_data[0] == 'e')
+            {
+                (*tree)->data = E_NUM;
+                (*tree)->type = NODE_TYPE_NUM;
+                (*tree)->pt   = (pt ? pt : *tree);
+            }
+            else
+            {
+                (*tree)->data = (int)str_data[0];
+                (*tree)->type = NODE_TYPE_VAR;
+                (*tree)->pt   = (pt ? pt : *tree);
+            }
         }
         else
         {

@@ -44,7 +44,7 @@ endif
 
 FLAGS += $(ADD_FLAGS)
 
-LIBS = -L./libs/logger -llogger
+LIBS = -L./libs/logger -llogger -lm
 
 
 DIRS = utils flags tree tree/verification

@@ -21,7 +21,7 @@ int main(const int argc, char* const argv[])
     tree_t* const div  = tree_ctor(OP_TYPE_DIV, NODE_TYPE_OP, NULL, NULL, NULL);
 
     tree_t* const sub  = tree_ctor(OP_TYPE_SUB, NODE_TYPE_OP, div, NULL, NULL);
-    tree_t* const mul  = tree_ctor(OP_TYPE_MUL, NODE_TYPE_OP, div, NULL, NULL);
+    tree_t* const mul  = tree_ctor(OP_TYPE_SUM, NODE_TYPE_OP, div, NULL, NULL);
 
 
     tree_t* const x    = tree_ctor(1,    NODE_TYPE_VAR, mul, NULL, NULL);
@@ -40,6 +40,38 @@ int main(const int argc, char* const argv[])
     div->lt = mul;
     div->rt = sub;
     div->size += mul->size + sub->size;
+
+
+    // FILE* file = fopen("./assets/temp.tex", "wb");
+    // if (!file)
+    // {
+    //     perror("Can't fopen file");
+    //     tree_dtor(div), dtor_all(&flags_objs);
+    //     return EXIT_FAILURE;
+    // }
+
+    // tree_t* const div_diff = tree_diff(div, file);
+    // tree_dumb(div_diff);
+    // TREE_ERROR_HANDLE(tree_print_tex(file, div_diff),
+    //                                      tree_dtor(div_diff), tree_dtor(div), dtor_all(&flags_objs);
+    // );
+
+    // if (fclose(file))
+    // {
+    //     perror("Can't fclose file");
+    //     tree_dtor(div_diff), tree_dtor(div), dtor_all(&flags_objs);
+    //     return EXIT_FAILURE;
+    // }
+
+    // if (system("pdflatex --output-directory=./assets/ assets/temp.tex") == -1)
+    // {
+    //     perror("Can't system create pdf");
+    //     tree_dtor(div_diff), tree_dtor(div), dtor_all(&flags_objs);
+    //     return EXIT_FAILURE;
+    // }
+
+    // tree_dtor(div_diff);
+
 
     // tree_dumb(div);
 
@@ -65,33 +97,42 @@ int main(const int argc, char* const argv[])
     // file = NULL;
 
     tree_t* temp = NULL;
-    TREE_ERROR_HANDLE(tree_read_inorder("./assets/baze1.txt", &temp),
+    TREE_ERROR_HANDLE(tree_read_inorder("./assets/crocodile.txt", &temp),
                                              tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
     );
 
 
-    tree_t* new_temp = tree_copy(temp);
+    tree_t* new_temp = tree_diff(temp, NULL);
     if (!new_temp)
     {
         fprintf(stderr, "Can't tree copy temp\n");
         tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
         return EXIT_FAILURE;
     }
+
     tree_dumb(new_temp);
 
-    FILE* file = fopen("./assets/temp.tex", "wb");
+    FILE* file = fopen("./assets/crocodile.tex", "wb");
     if (!file)
     {
         perror("Can't fopen file");
         tree_dtor(new_temp); tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
         return EXIT_FAILURE;
     }
-    TREE_ERROR_HANDLE(tree_print_tex(file, temp),     
+    TREE_ERROR_HANDLE(tree_print_tex(file, new_temp),     
                         tree_dtor(new_temp); tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
     );
     if (fclose(file))
     {
         perror("Can't fclose file");
+        tree_dtor(new_temp); tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
+        return EXIT_FAILURE;
+    }
+
+    if (system("pdflatex --output-directory=./assets/ assets/crocodile.tex") == -1)
+    {
+        perror("Can't system create pdf");
+        tree_dtor(new_temp); tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
         return EXIT_FAILURE;
     }
 

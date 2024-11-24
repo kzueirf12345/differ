@@ -40,6 +40,8 @@ enum OpType
 };
 static_assert(OP_TYPE_UNKNOWN == 0);
 
+#define E_NUM 0xDEDC0C1
+
 typedef struct Tree
 { 
     int data;
