@@ -51,7 +51,7 @@ DIRS = utils flags tree tree/verification
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
 SOURCES = main.c utils/utils.c flags/flags.c tree/funcs.c tree/verification/verification.c \
-		  tree/verification/dumb.c tree/inout.c
+		  tree/verification/dumb.c tree/inout.c tree/diff_copy.c tree/diff_funcs.c
 
 SOURCES_REL_PATH = $(SOURCES:%=$(SRC_DIR)/%)
 OBJECTS_REL_PATH = $(SOURCES:%.c=$(BUILD_DIR)/%.o)

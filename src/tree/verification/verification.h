@@ -2,6 +2,7 @@
 #define DIFFER_SRC_TREE_VERIFICATION_VERIFICATION_H
 
 #include <assert.h>
+#include <stdbool.h>
 
 #include "tree/structs.h"
 #include "tree/verification/dumb.h"

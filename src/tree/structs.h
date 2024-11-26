@@ -40,6 +40,13 @@ enum OpType
 };
 static_assert(OP_TYPE_UNKNOWN == 0);
 
+enum OpCountOperands
+{
+    OP_COUNT_OPERANDS_ZERO      = 0,
+    OP_COUNT_OPERANDS_UNARY     = 1,
+    OP_COUNT_OPERANDS_BINARY    = 2
+};
+
 #define E_NUM 0xDEDC0C1
 
 typedef struct Tree

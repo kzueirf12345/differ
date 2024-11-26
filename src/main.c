@@ -102,7 +102,7 @@ int main(const int argc, char* const argv[])
     );
 
 
-    tree_t* new_temp = tree_diff(temp, NULL);
+    tree_t* new_temp = tree_diff(temp, NULL, stdout);
     if (!new_temp)
     {
         fprintf(stderr, "Can't tree copy temp\n");
