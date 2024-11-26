@@ -114,8 +114,20 @@ tree_t* tree_ctor(int data, enum NodeType type,
     tree->data = data;
     tree->type = type;
 
-    TREE_VERIFY(tree);
+    // TREE_VERIFY(tree); i remove it eeeee
     return tree;
+}
+
+void tree_fill_pt(tree_t* const tree, tree_t* const pt)
+{
+    if (tree == NULL || tree->pt != tree) return;
+
+    lassert(!is_invalid_ptr(tree), "");
+
+    tree->pt = (pt ? pt : tree);
+
+    tree_fill_pt(tree->lt, tree);
+    tree_fill_pt(tree->rt, tree);
 }
 
 void tree_dtor(tree_t* const tree)

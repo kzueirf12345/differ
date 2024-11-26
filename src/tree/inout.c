@@ -82,20 +82,13 @@ enum TreeError tree_print_tex (FILE* out, const tree_t* const tree)
 
     fprintf(out, "\\documentclass[a4paper]{article}\n"
                  "\\usepackage{amsmath}\n"
-                 "\\usepackage{graphicx}\n"
-                 "\\usepackage{longtable}\n"
-                 "\\usepackage{lscape}\n"
                  "\n"
                  "\\begin{document}\n"
-                 "\\begin{landscape}\n"
-                 "\\begin{longtable}{c}\n"
-                 "\\rotatebox{270}{\n$\n");
+                 "$$\n");
     
     TREE_ERROR_HANDLE(tree_print_tex_recursive_(out, tree));
 
-    fprintf(out, "\n$}\n"
-                 "\\end{longtable}\n"
-                 "\\end{landscape}\n"
+    fprintf(out, "\n$$\n"
                  "\\end{document}\n");
 
     return TREE_ERROR_SUCCESS;
