@@ -47,14 +47,14 @@ tree_t* tree_diff(const tree_t* const tree, tree_t* const pt, FILE* out)
 // //file // TODO
 
     if (tree->type == NODE_TYPE_NUM)
-        return tree_ctor(0, NODE_TYPE_NUM, pt, NULL, NULL);
+        return tree_ctor((tree_data_u){.num = 0}, NODE_TYPE_NUM, pt, NULL, NULL);
     
     if (tree->type == NODE_TYPE_VAR)
-        return tree_ctor(1, NODE_TYPE_NUM, pt, NULL, NULL);
+        return tree_ctor((tree_data_u){.num = 1}, NODE_TYPE_NUM, pt, NULL, NULL);
     
     tree_t* new_tree = NULL;
 
-    switch ((enum OpType)tree->data)
+    switch (tree->data.op)
     { 
         DIFF_OP_(SUM);
         DIFF_OP_(SUB);

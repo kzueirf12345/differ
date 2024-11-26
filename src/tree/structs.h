@@ -3,6 +3,9 @@
 
 #include <stdio.h>
 #include <assert.h>
+#include <math.h>
+
+
 
 enum NodeType
 {
@@ -40,18 +43,16 @@ enum OpType
 };
 static_assert(OP_TYPE_UNKNOWN == 0);
 
-enum OpCountOperands
+typedef union TreeData
 {
-    OP_COUNT_OPERANDS_ZERO      = 0,
-    OP_COUNT_OPERANDS_UNARY     = 1,
-    OP_COUNT_OPERANDS_BINARY    = 2
-};
-
-#define E_NUM 0xDEDC0C1
+    double num;
+    enum OpType op;
+    int var;
+} tree_data_u;
 
 typedef struct Tree
 { 
-    int data;
+    tree_data_u data;
     enum NodeType type;
 
     struct Tree* lt;

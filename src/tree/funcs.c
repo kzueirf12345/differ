@@ -79,7 +79,7 @@ enum OpType str_to_op_type(const char* const str)
     return OP_TYPE_UNKNOWN;
 }
 
-tree_t* tree_ctor(int data, enum NodeType type, 
+tree_t* tree_ctor(tree_data_u data, enum NodeType type, 
                   tree_t* const pt, tree_t* const lt, tree_t* const rt)
 {
     tree_t* tree = (tree_t*)calloc(1, sizeof(tree_t));

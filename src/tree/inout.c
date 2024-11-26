@@ -7,12 +7,13 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <stdbool.h>
+#include <math.h>
 
 #include "tree/funcs.h"
 #include "logger/liblogger.h"
 #include "utils/utils.h"
 
-static enum TreeError tree_print_data_(FILE* out, const int data, enum NodeType type);
+static enum TreeError tree_print_data_(FILE* out, const tree_data_u data, enum NodeType type);
 
 enum TreeError tree_print_preorder(FILE* out, const tree_t* const tree)
 {
@@ -101,9 +102,9 @@ enum TreeError tree_print_tex_recursive_(FILE* out, const tree_t* const tree)
     lassert(!is_invalid_ptr(out), "");
 
     const bool do_add_braket = add_braket(tree);
-    const bool is_div = (tree->type == NODE_TYPE_OP && (enum OpType)tree->data == OP_TYPE_DIV);
-    const bool is_log = (tree->type == NODE_TYPE_OP && (enum OpType)tree->data == OP_TYPE_LOG);
-    const bool is_pow = (tree->type == NODE_TYPE_OP && (enum OpType)tree->data == OP_TYPE_POW);
+    const bool is_div = (tree->type == NODE_TYPE_OP && tree->data.op == OP_TYPE_DIV);
+    const bool is_log = (tree->type == NODE_TYPE_OP && tree->data.op == OP_TYPE_LOG);
+    const bool is_pow = (tree->type == NODE_TYPE_OP && tree->data.op == OP_TYPE_POW);
 
     if (do_add_braket && fputs("\\left(", out) < 0)
     {
@@ -178,13 +179,13 @@ bool add_braket(const tree_t* const tree)
 
     if (tree->type != NODE_TYPE_OP)
     {
-        if (tree->type == NODE_TYPE_NUM && tree->data < 0)
+        if (tree->type == NODE_TYPE_NUM && tree->data.num < 0)
             return true;
         
         return false;
     }
 
-    switch ((enum OpType)tree->pt->data)
+    switch (tree->pt->data.op)
     {
     case OP_TYPE_SIN:
     case OP_TYPE_COS:
@@ -199,7 +200,7 @@ bool add_braket(const tree_t* const tree)
     case OP_TYPE_TH:
     case OP_TYPE_CTH:
     {
-        return (tree->type == NODE_TYPE_OP) && ((enum OpType)tree->data != OP_TYPE_DIV);
+        return (tree->type == NODE_TYPE_OP) && (tree->data.op != OP_TYPE_DIV);
     }
 
     case OP_TYPE_LOG:
@@ -210,8 +211,8 @@ bool add_braket(const tree_t* const tree)
     case OP_TYPE_SUB:
     {
         return (tree->pt->rt == tree) && (tree->type == NODE_TYPE_OP) 
-            && (((enum OpType)tree->data == OP_TYPE_SUM) 
-            ||  ((enum OpType)tree->data == OP_TYPE_SUB));
+            && ((tree->data.op == OP_TYPE_SUM) 
+            ||  (tree->data.op == OP_TYPE_SUB));
     }
 
     case OP_TYPE_SUM:
@@ -221,8 +222,8 @@ bool add_braket(const tree_t* const tree)
     case OP_TYPE_MUL:
     {
         return (tree->type == NODE_TYPE_OP) 
-            && (((enum OpType)tree->data == OP_TYPE_SUM) 
-            ||  ((enum OpType)tree->data == OP_TYPE_SUB));
+            && ((tree->data.op == OP_TYPE_SUM) 
+            ||  (tree->data.op == OP_TYPE_SUB));
     }
 
     case OP_TYPE_POW:
@@ -240,14 +241,14 @@ bool add_braket(const tree_t* const tree)
     return true;
 }
 
-static enum TreeError tree_print_data_(FILE* out, const int data, enum NodeType type)
+static enum TreeError tree_print_data_(FILE* out, const tree_data_u data, enum NodeType type)
 {
     lassert(!is_invalid_ptr(out), "");
 
     switch (type)
     {
     case NODE_TYPE_NUM:
-        if (data == E_NUM)
+        if (fabs(data.num - M_E) < __DBL_EPSILON__)
         {
             if (fprintf(out, "e") <= 0)
             {
@@ -255,14 +256,14 @@ static enum TreeError tree_print_data_(FILE* out, const int data, enum NodeType 
                 return TREE_ERROR_STANDARD_ERRNO;
             }
         }
-        else if (fprintf(out, "%d", data) <= 0)
+        else if (fprintf(out, "%g", data.num) <= 0)
         {
             perror("Can't fprintf data");
             return TREE_ERROR_STANDARD_ERRNO;
         }
         break;
     case NODE_TYPE_OP:
-        if (fputs(op_type_to_str((enum OpType)data), out) <= 0)
+        if (fputs(op_type_to_str(data.op), out) <= 0)
         {
             perror("Can't fputs data");
             return TREE_ERROR_STANDARD_ERRNO;
@@ -336,11 +337,11 @@ enum TreeError tree_read_preorder_from_str_(char** cur_str, tree_t** tree, tree_
     }
     ++*cur_str;
 
-    int num_data = 0;
+    tree_data_u data = {};
     char str_data[DATA_STR_MAX_SIZE] = {};
-    if (sscanf(*cur_str, "%d%*1[()]", &num_data) == 1)
+    if (sscanf(*cur_str, "%lg%*1[()]", &data.num) == 1)
     {
-        *tree = tree_ctor(num_data, NODE_TYPE_NUM, pt, NULL, NULL);
+        *tree = tree_ctor(data, NODE_TYPE_NUM, pt, NULL, NULL);
     }
     else if (sscanf(*cur_str, "%[^()]", str_data) == 1)
     {
@@ -349,16 +350,19 @@ enum TreeError tree_read_preorder_from_str_(char** cur_str, tree_t** tree, tree_
         {
             if (str_data[0] == 'e')
             {
-                *tree = tree_ctor(E_NUM, NODE_TYPE_NUM, pt, NULL, NULL);
+                data.num = M_E;
+                *tree = tree_ctor(data, NODE_TYPE_NUM, pt, NULL, NULL);
             }
             else
             {
-                *tree = tree_ctor((int)str_data[0], NODE_TYPE_VAR, pt, NULL, NULL);
+                data.var = (int)str_data[0];
+                *tree = tree_ctor(data, NODE_TYPE_VAR, pt, NULL, NULL);
             }
         }
         else
         {
-            *tree = tree_ctor(str_to_op_type(str_data), NODE_TYPE_OP, pt, NULL, NULL);
+            data.op = str_to_op_type(str_data);
+            *tree = tree_ctor(data, NODE_TYPE_OP, pt, NULL, NULL);
         }
     }
     else
@@ -408,7 +412,7 @@ enum TreeError tree_read_inorder_from_str_(char** cur_str, tree_t** tree, tree_t
     }
     ++*cur_str;
 
-    *tree = tree_ctor(0, NODE_TYPE_NUM, NULL, NULL, NULL);
+    *tree = tree_ctor((tree_data_u){.num = 0}, NODE_TYPE_NUM, NULL, NULL, NULL);
 
     size_t cur_size = 0;
     size_counter_   = 0;
@@ -422,7 +426,7 @@ enum TreeError tree_read_inorder_from_str_(char** cur_str, tree_t** tree, tree_t
     char str_data[DATA_STR_MAX_SIZE] = {};
     if (sscanf(*cur_str, "%d%*1[()]", &num_data) == 1)
     {
-        (*tree)->data = num_data;
+        (*tree)->data.num = num_data;
         (*tree)->type = NODE_TYPE_NUM;
         (*tree)->pt   = (pt ? pt : *tree);
     }
@@ -433,20 +437,20 @@ enum TreeError tree_read_inorder_from_str_(char** cur_str, tree_t** tree, tree_t
         {
             if (str_data[0] == 'e')
             {
-                (*tree)->data = E_NUM;
+                (*tree)->data.num = M_E;
                 (*tree)->type = NODE_TYPE_NUM;
                 (*tree)->pt   = (pt ? pt : *tree);
             }
             else
             {
-                (*tree)->data = (int)str_data[0];
+                (*tree)->data.var = (int)str_data[0];
                 (*tree)->type = NODE_TYPE_VAR;
                 (*tree)->pt   = (pt ? pt : *tree);
             }
         }
         else
         {
-            (*tree)->data = str_to_op_type(str_data);
+            (*tree)->data.op = str_to_op_type(str_data);
             (*tree)->type = NODE_TYPE_OP;
             (*tree)->pt   = (pt ? pt : *tree);
         }

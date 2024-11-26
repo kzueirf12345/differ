@@ -18,16 +18,16 @@ int main(const int argc, char* const argv[])
         return EXIT_FAILURE;
     }
 
-    tree_t* const div  = tree_ctor(OP_TYPE_DIV, NODE_TYPE_OP, NULL, NULL, NULL);
+    tree_t* const div  = tree_ctor((tree_data_u){.op = OP_TYPE_DIV}, NODE_TYPE_OP, NULL, NULL, NULL);
 
-    tree_t* const sub  = tree_ctor(OP_TYPE_SUB, NODE_TYPE_OP, div, NULL, NULL);
-    tree_t* const mul  = tree_ctor(OP_TYPE_SUM, NODE_TYPE_OP, div, NULL, NULL);
+    tree_t* const sub  = tree_ctor((tree_data_u){.op = OP_TYPE_SUB}, NODE_TYPE_OP, div, NULL, NULL);
+    tree_t* const mul  = tree_ctor((tree_data_u){.op = OP_TYPE_SUM}, NODE_TYPE_OP, div, NULL, NULL);
 
 
-    tree_t* const x    = tree_ctor(1,    NODE_TYPE_VAR, mul, NULL, NULL);
-    tree_t* const num1 = tree_ctor(3,    NODE_TYPE_NUM, mul, NULL, NULL);
-    tree_t* const num2 = tree_ctor(1000, NODE_TYPE_NUM, sub, NULL, NULL);
-    tree_t* const num3 = tree_ctor(7,    NODE_TYPE_NUM, sub, NULL, NULL);
+    tree_t* const x    = tree_ctor((tree_data_u){.num = 1 },    NODE_TYPE_VAR, mul, NULL, NULL);
+    tree_t* const num1 = tree_ctor((tree_data_u){.num = 3 },    NODE_TYPE_NUM, mul, NULL, NULL);
+    tree_t* const num2 = tree_ctor((tree_data_u){.num = 1000 }, NODE_TYPE_NUM, sub, NULL, NULL);
+    tree_t* const num3 = tree_ctor((tree_data_u){.num = 7 },    NODE_TYPE_NUM, sub, NULL, NULL);
     
     mul->lt = x;
     mul->rt = num1;
@@ -97,7 +97,7 @@ int main(const int argc, char* const argv[])
     // file = NULL;
 
     tree_t* temp = NULL;
-    TREE_ERROR_HANDLE(tree_read_inorder("./assets/crocodile.txt", &temp),
+    TREE_ERROR_HANDLE(tree_read_inorder("./assets/temp2.txt", &temp),
                                              tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);
     );
 
@@ -112,7 +112,7 @@ int main(const int argc, char* const argv[])
 
     tree_dumb(new_temp);
 
-    FILE* file = fopen("./assets/crocodile.tex", "wb");
+    FILE* file = fopen("./assets/temp2.tex", "wb");
     if (!file)
     {
         perror("Can't fopen file");
@@ -129,7 +129,7 @@ int main(const int argc, char* const argv[])
         return EXIT_FAILURE;
     }
 
-    if (system("pdflatex --output-directory=./assets/ assets/crocodile.tex") == -1)
+    if (system("pdflatex --output-directory=./assets/ assets/temp2.tex") == -1)
     {
         perror("Can't system create pdf");
         tree_dtor(new_temp); tree_dtor(temp), tree_dtor(div), dtor_all(&flags_objs);

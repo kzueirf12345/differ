@@ -361,7 +361,7 @@ int create_tree_dot_(const tree_t* const tree)
     return 0;
 }
 
-int dot_print_node_(const int data, const enum NodeType data_type, const size_t size);
+int dot_print_node_(const tree_data_u data, const enum NodeType data_type, const size_t size);
 
 int create_tree_dot_recursive_(const tree_t* const tree, const size_t tree_size, size_t parent_num)
 {
@@ -397,14 +397,14 @@ int create_tree_dot_recursive_(const tree_t* const tree, const size_t tree_size,
     return 0;
 }
 
-int dot_print_node_(const int data, const enum NodeType data_type, const size_t size)
+int dot_print_node_(const tree_data_u data, const enum NodeType data_type, const size_t size)
 {
     switch (data_type)
     {
     case NODE_TYPE_NUM:
         fprintf(DUMBER_.dot_file, 
-                "node%zu [shape=Mrecord; label = \"{{%zu|%s|size=%zu}|%d}\"; fillcolor = pink];\n",
-                node_count_, node_count_, node_type_to_str(data_type), size, data);
+                "node%zu [shape=Mrecord; label = \"{{%zu|%s|size=%zu}|%g}\"; fillcolor = pink];\n",
+                node_count_, node_count_, node_type_to_str(data_type), size, data.num);
         break;
     case NODE_TYPE_VAR: //TODO more vars
         fprintf(DUMBER_.dot_file, 
@@ -415,7 +415,7 @@ int dot_print_node_(const int data, const enum NodeType data_type, const size_t 
         fprintf(DUMBER_.dot_file, 
                 "node%zu [shape=Mrecord; label = \"{{%zu|%s|size=%zu}|%s}\"; fillcolor = peachpuff];\n",
                 node_count_, node_count_, node_type_to_str(data_type), size, 
-                op_type_to_str((enum OpType)data));
+                op_type_to_str(data.op));
         break;
     default:
         return -1;

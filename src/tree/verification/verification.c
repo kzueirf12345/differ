@@ -50,7 +50,7 @@ enum TreeError tree_verify_NOT_USE(const tree_t* const tree)
             return TREE_ERROR_UNKNOWN;
     }
 
-    if (tree->type != NODE_TYPE_NUM && tree->data < 0)
+    if (tree->type != NODE_TYPE_NUM && tree->data.num < 0)
         return TREE_ERROR_DATA_LESS_ZERO;
 
     switch (is_invalid_ptr(tree->pt))
