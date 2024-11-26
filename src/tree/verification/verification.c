@@ -71,10 +71,7 @@ enum TreeError tree_verify_NOT_USE(const tree_t* const tree)
     if (tree->lt)
     {
         if (tree->lt->pt != tree)
-        {
-            fprintf(stderr, "tree->lt->pt: %p\ttree: %p\ttree->lt: %p\n", tree->lt->pt, tree, tree->lt);
             return TREE_ERROR_LT_PT_INCORRECT;
-        }
         
         TREE_ERROR_HANDLE(tree_verify_NOT_USE(tree->lt));
     }

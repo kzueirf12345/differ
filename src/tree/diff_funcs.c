@@ -15,10 +15,10 @@
 #define _COS(lt, rt)    tree_ctor(OP_TYPE_COS,     NODE_TYPE_OP,    NULL,   lt,     rt)
 #define _TG(lt, rt)     tree_ctor(OP_TYPE_TG,      NODE_TYPE_OP,    NULL,   lt,     rt)
 #define _CTG(lt, rt)    tree_ctor(OP_TYPE_CTG,     NODE_TYPE_OP,    NULL,   lt,     rt)
-#define _ASIN(lt, rt)   tree_ctor(OP_TYPE_ASIN,    NODE_TYPE_OP,    NULL,   lt,     rt)
-#define _ACOS(lt, rt)   tree_ctor(OP_TYPE_ACOS,    NODE_TYPE_OP,    NULL,   lt,     rt)
-#define _ATG(lt, rt)    tree_ctor(OP_TYPE_ATG,     NODE_TYPE_OP,    NULL,   lt,     rt)
-#define _ACTG(lt, rt)   tree_ctor(OP_TYPE_ACTG,    NODE_TYPE_OP,    NULL,   lt,     rt)
+#define _ARCSIN(lt, rt) tree_ctor(OP_TYPE_ARCSIN,  NODE_TYPE_OP,    NULL,   lt,     rt)
+#define _ARCCOS(lt, rt) tree_ctor(OP_TYPE_ARCCOS,  NODE_TYPE_OP,    NULL,   lt,     rt)
+#define _ARCTG(lt, rt)  tree_ctor(OP_TYPE_ARCTG,   NODE_TYPE_OP,    NULL,   lt,     rt)
+#define _ARCCTG(lt, rt) tree_ctor(OP_TYPE_ARCCTG,  NODE_TYPE_OP,    NULL,   lt,     rt)
 #define _SH(lt, rt)     tree_ctor(OP_TYPE_SH,      NODE_TYPE_OP,    NULL,   lt,     rt)
 #define _CH(lt, rt)     tree_ctor(OP_TYPE_CH,      NODE_TYPE_OP,    NULL,   lt,     rt)
 #define _TH(lt, rt)     tree_ctor(OP_TYPE_TH,      NODE_TYPE_OP,    NULL,   lt,     rt)
@@ -196,7 +196,7 @@ tree_t* diff_CTG (const tree_t* const tree, tree_t* const pt, FILE* out)
     return new_tree;
 }
 
-tree_t* diff_ASIN (const tree_t* const tree, tree_t* const pt, FILE* out)
+tree_t* diff_ARCSIN (const tree_t* const tree, tree_t* const pt, FILE* out)
 {
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
@@ -209,19 +209,19 @@ tree_t* diff_ASIN (const tree_t* const tree, tree_t* const pt, FILE* out)
     return new_tree;
 }
 
-tree_t* diff_ACOS (const tree_t* const tree, tree_t* const pt, FILE* out)
+tree_t* diff_ARCCOS (const tree_t* const tree, tree_t* const pt, FILE* out)
 {
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _MUL(_NUM(-1), diff_ASIN(tree, NULL, out));
+    tree_t* const new_tree = _MUL(_NUM(-1), diff_ARCSIN(tree, NULL, out));
 
     tree_fill_pt(new_tree, pt);
 
     return new_tree;
 }
 
-tree_t* diff_ATG (const tree_t* const tree, tree_t* const pt, FILE* out)
+tree_t* diff_ARCTG (const tree_t* const tree, tree_t* const pt, FILE* out)
 {
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
@@ -233,12 +233,12 @@ tree_t* diff_ATG (const tree_t* const tree, tree_t* const pt, FILE* out)
     return new_tree;
 }
 
-tree_t* diff_ACTG (const tree_t* const tree, tree_t* const pt, FILE* out)
+tree_t* diff_ARCCTG (const tree_t* const tree, tree_t* const pt, FILE* out)
 {
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _MUL(_NUM(-1), diff_ATG(tree, NULL, out));
+    tree_t* const new_tree = _MUL(_NUM(-1), diff_ARCTG(tree, NULL, out));
 
     tree_fill_pt(new_tree, pt);
 
@@ -364,10 +364,10 @@ tree_t* diff_LOG_nlt_rt_(const tree_t* const tree, tree_t* const pt, FILE* out)
 #undef _COS
 #undef _TG
 #undef _CTG
-#undef _ASIN
-#undef _ACOS
-#undef _ATG
-#undef _ACTG
+#undef _ARCSIN
+#undef _ARCCOS
+#undef _ARCTG
+#undef _ARCCTG
 #undef _SH
 #undef _CH
 #undef _TH

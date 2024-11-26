@@ -190,10 +190,10 @@ bool add_braket(const tree_t* const tree)
     case OP_TYPE_COS:
     case OP_TYPE_TG:
     case OP_TYPE_CTG:
-    case OP_TYPE_ASIN:
-    case OP_TYPE_ACOS:
-    case OP_TYPE_ATG:
-    case OP_TYPE_ACTG:
+    case OP_TYPE_ARCSIN:
+    case OP_TYPE_ARCCOS:
+    case OP_TYPE_ARCTG:
+    case OP_TYPE_ARCCTG:
     case OP_TYPE_SH:
     case OP_TYPE_CH:
     case OP_TYPE_TH:

@@ -24,10 +24,10 @@ enum OpType
     OP_TYPE_TG      = 't',
     OP_TYPE_CTG     = 'c' + 't',
 
-    OP_TYPE_ASIN    = 'a' + 's',
-    OP_TYPE_ACOS    = 'a' + 'c',
-    OP_TYPE_ATG     = 'a' + 't',
-    OP_TYPE_ACTG    = 'a' + 'c' + 't', 
+    OP_TYPE_ARCSIN  = 'a' + 's',
+    OP_TYPE_ARCCOS  = 'a' + 'c',
+    OP_TYPE_ARCTG   = 'a' + 't',
+    OP_TYPE_ARCCTG  = 'a' + 'c' + 't', 
 
     OP_TYPE_SH      = 's' + 'h',
     OP_TYPE_CH      = 'c' + 'h',
@@ -60,7 +60,5 @@ typedef struct Tree
 
     size_t size;
 } tree_t;
-
-
 
 #endif /* DIFFER_SRC_TREE_TREE_STRUCTS_H */

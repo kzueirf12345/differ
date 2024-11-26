@@ -65,10 +65,10 @@ tree_t* tree_diff(const tree_t* const tree, tree_t* const pt, FILE* out)
         DIFF_OP_(COS);
         DIFF_OP_(TG);
         DIFF_OP_(CTG);
-        DIFF_OP_(ASIN);
-        DIFF_OP_(ACOS);
-        DIFF_OP_(ATG);
-        DIFF_OP_(ACTG);
+        DIFF_OP_(ARCSIN);
+        DIFF_OP_(ARCCOS);
+        DIFF_OP_(ARCTG);
+        DIFF_OP_(ARCCTG);
         DIFF_OP_(SH);
         DIFF_OP_(CH);
         DIFF_OP_(TH);
@@ -85,3 +85,5 @@ tree_t* tree_diff(const tree_t* const tree, tree_t* const pt, FILE* out)
 
     return new_tree;
 }
+
+#undef DIFF_OP_
