@@ -23,5 +23,4 @@ tree_t* diff_CH         (const tree_t* const tree, tree_t* const pt, FILE* out);
 tree_t* diff_TH         (const tree_t* const tree, tree_t* const pt, FILE* out);
 tree_t* diff_CTH        (const tree_t* const tree, tree_t* const pt, FILE* out);
 tree_t* diff_LOG        (const tree_t* const tree, tree_t* const pt, FILE* out);
-
 #endif /* DIFFER_SRC_TREE_DIFF_FUNCS_H */

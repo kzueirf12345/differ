@@ -5,11 +5,27 @@
 #include "flags/flags.h"
 #include "tree/funcs.h"
 
-int init_all(flags_objs_t* const flags_objs, const int argc, char* const * argv);
-int dtor_all(flags_objs_t* const flags_objs);
+// int init_all(flags_objs_t* const flags_objs, const int argc, char* const * argv);
+// int dtor_all(flags_objs_t* const flags_objs);
+
+const char* s = "25*10*(3*(25-10*2)+1)$";
+size_t      p = 0;
+
+int GetG();
+int GetE();
+int GetT();
+int GetP();
+int GetN();
+
+#define SyntaxError \
+    fprintf(stderr, "syntax error line: %d\n", __LINE__); \
+    exit(0)
+
 
 int main(const int argc, char* const argv[])
 {
+
+/*
     flags_objs_t flags_objs = {};
 
     if (init_all(&flags_objs, argc, argv))
@@ -214,6 +230,83 @@ int logger_init(char* const log_folder)
     TREE_DUMB_ERROR_HANDLE(tree_dumb_set_out_file(dumb_filename));
     
     return EXIT_SUCCESS;
+*/
+
+    printf("ans: %d\n", GetG());
+
+    return EXIT_SUCCESS;
 }
 #undef LOGOUT_FILENAME
 #undef   DUMB_FILENAME
+
+int GetG()
+{
+    int val = GetE();
+    if (s[p] != '$')
+    {
+        SyntaxError;
+    }
+    return val;
+}
+
+int GetE()
+{
+    int val = GetT();
+    while(s[p] == '+' || s[p] == '-')
+    {
+        int op = s[p];
+        ++p;
+        int val2 = GetT();
+        if (op == '+') val += val2;
+        else           val -= val2;
+    }
+    return val;
+}
+
+int GetT()
+{
+    int val = GetP();
+    while(s[p] == '*' || s[p] == '/')
+    {
+        int op = s[p];
+        ++p;
+        int val2 = GetP();
+
+        if (op == '*') val *= val2;
+        else           val /= val2;
+    }
+    return val;
+}
+
+int GetP()
+{
+    if (s[p] == '(')
+    {
+        ++p;
+        int val = GetE();
+        if (s[p] != ')')
+        {
+            SyntaxError;
+        }
+        ++p;
+        return val;
+    }
+    
+    return GetN();
+}
+
+int GetN()
+{
+    size_t old_p = p;
+    int val = 0;
+    while ('0' <= s[p] && s[p] <= '9')
+    {
+        val = val * 10 + s[p] - '0';
+        ++p;
+    }
+    if (p == old_p)
+    {
+        SyntaxError;
+    }
+    return val;
+}
