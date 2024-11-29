@@ -94,7 +94,7 @@ enum FlagsError generate_pdf_(flags_objs_t* const flags_objs)
 
     char system_cmd[FILENAME_MAX_SIZE] = {};
 
-    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "mkdir %s", pdf_directory) < 0)
+    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "mkdir -p %s", pdf_directory) < 0)
     {
         perror("Can't snprintf system cmd mkdir");
         return FLAGS_ERROR_FAILURE;
@@ -106,7 +106,7 @@ enum FlagsError generate_pdf_(flags_objs_t* const flags_objs)
         return FLAGS_ERROR_FAILURE;
     }
 
-    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "pdflatex --output-directory=%s %s",
+    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "pdflatex --output-directory=%s %s > /dev/null",
                  pdf_directory, flags_objs->out_filename) < 0)
     {
         perror("Can't snprintf system cmd");

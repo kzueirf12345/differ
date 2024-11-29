@@ -27,7 +27,8 @@ operand_t math_MUL        (const operand_t first, const operand_t second, FILE* 
 operand_t math_DIV        (const operand_t first, const operand_t second, FILE* out)
 {
     lassert(!is_invalid_ptr(out), "");
-    lassert((int)second, "");
+    if (fabs(second) < __DBL_EPSILON__)
+        return NAN;
 
     return first / second;
 }
@@ -56,12 +57,18 @@ operand_t math_TG         (const operand_t first, const operand_t second, FILE* 
     lassert(!is_invalid_ptr(out), "");
     (void)second;
 
+    if (fabs(cos(first)) < __DBL_EPSILON__)
+        return NAN;
+
     return tan(first);
 }
 operand_t math_CTG        (const operand_t first, const operand_t second, FILE* out)
 {
     lassert(!is_invalid_ptr(out), "");
     (void)second;
+
+    if (fabs(sin(first)) < __DBL_EPSILON__)
+        return NAN;
 
     return tan(M_PI_2 - first);
 }
@@ -70,12 +77,18 @@ operand_t math_ARCSIN     (const operand_t first, const operand_t second, FILE* 
     lassert(!is_invalid_ptr(out), "");
     (void)second;
 
+    if (first < -1 && 1 < first)
+        return NAN;
+
     return asin(first);
 }
 operand_t math_ARCCOS     (const operand_t first, const operand_t second, FILE* out)
 {
     lassert(!is_invalid_ptr(out), "");
     (void)second;
+
+    if (first < -1 && 1 < first)
+        return NAN;
 
     return acos(first);
 }
@@ -112,6 +125,9 @@ operand_t math_TH         (const operand_t first, const operand_t second, FILE* 
     lassert(!is_invalid_ptr(out), "");
     (void)second;
 
+    if (fabs(cosh(first)) < __DBL_EPSILON__)
+        return NAN;
+
     return tanh(first);
 }
 operand_t math_CTH        (const operand_t first, const operand_t second, FILE* out)
@@ -119,11 +135,17 @@ operand_t math_CTH        (const operand_t first, const operand_t second, FILE* 
     lassert(!is_invalid_ptr(out), "");
     (void)second;
 
+    if (fabs(sinh(first)) < __DBL_EPSILON__)
+        return NAN;
+
     return 1 / tanh(first);
 }
 operand_t math_LOG        (const operand_t first, const operand_t second, FILE* out)
 {
     lassert(!is_invalid_ptr(out), "");
+
+    if (first < 0 || fabs(first - 1) < __DBL_EPSILON__ || second < 0)
+        return NAN;
 
     return log(first) / log(second);
 }

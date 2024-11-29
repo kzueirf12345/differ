@@ -18,7 +18,7 @@ tree_t* tree_diff   (const tree_t* const tree, tree_t* const pt, FILE* out);
 enum TreeError tree_print_tex(FILE* out, const tree_t* const tree);
 enum TreeError tree_read     (const char* const in_name, tree_t** tree);
 
-enum TreeError tree_simplify(tree_t* const tree, FILE* out);
+enum TreeError tree_simplify(tree_t** tree, FILE* out);
 
 bool tree_include_var(const tree_t* const tree);
 void tree_update_size(tree_t* const tree);

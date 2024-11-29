@@ -24,6 +24,12 @@ const char* flags_strerror(const enum FlagsError error);
         }                                                                                           \
     } while(0)
 
+// enum Mode
+// {
+//     MODE_DIFF       = 0,
+//     MODE_NDIFF      = 1,
+//     MODE_TAYLOR     = 2
+// };
 
 typedef struct FlagsObjs
 {

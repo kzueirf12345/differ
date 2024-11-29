@@ -40,6 +40,11 @@ int main(const int argc, char* const argv[])
 
     tree_t* tree2_diff = tree_diff(tree2, NULL, stdout);
 
+    TREE_ERROR_HANDLE(tree_simplify(&tree2, stdout),
+tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
+    );
+
+
     TREE_ERROR_HANDLE(tree_print_tex(flags_objs.out_file, tree2),          
 tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
     );
