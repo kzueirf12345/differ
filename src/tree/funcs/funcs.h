@@ -2,7 +2,7 @@
 #define DIFFER_SRC_TREE_TREE_FUNCS_H
 
 #include "tree/structs.h"
-#include "verification/verification.h"
+#include "tree/verification/verification.h"
 
 const char* node_type_to_str(const enum NodeType type);
 enum OpType   str_to_op_type(const char* const str);

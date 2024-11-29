@@ -4,7 +4,7 @@
 
 #include "flags/flags.h"
 #include "logger/liblogger.h"
-#include "tree/funcs.h"
+#include "tree/funcs/funcs.h"
 #include "tree/verification/dumb.h"
 
 int init_all(flags_objs_t* const flags_objs, const int argc, char* const * argv);

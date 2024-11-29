@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 #include "logger/liblogger.h"
-#include "tree/funcs.h"
+#include "tree/funcs/funcs.h"
 #include "tree/operation/operation.h"
 #include "utils/utils.h"
 

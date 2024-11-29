@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "logger/liblogger.h"
-#include "tree/funcs.h"
+#include "tree/funcs/funcs.h"
 #include "tree/operation/op_diff.h"
 
 tree_t* tree_copy(const tree_t* const tree, tree_t* const pt)

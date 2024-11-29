@@ -47,13 +47,13 @@ FLAGS += $(ADD_FLAGS)
 LIBS = -lm -L./libs/logger -llogger
 
 
-DIRS = utils flags tree tree/verification tree/operation
+DIRS = utils flags tree tree/verification tree/operation tree/funcs
 BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 
-SOURCES = main.c utils/utils.c flags/flags.c tree/funcs_create.c tree/funcs_diff.c \
+SOURCES = main.c utils/utils.c flags/flags.c tree/funcs/funcs_create.c tree/funcs/funcs_diff.c \
 		  tree/verification/verification.c tree/verification/dumb.c tree/operation/op_diff.c \
-		  tree/operation/op_math.c tree/operation/operation.c tree/funcs_output.c \
-		  tree/funcs_input.c
+		  tree/operation/op_math.c tree/operation/operation.c tree/funcs/funcs_output.c \
+		  tree/funcs/funcs_input.c
 
 SOURCES_REL_PATH = $(SOURCES:%=$(SRC_DIR)/%)
 OBJECTS_REL_PATH = $(SOURCES:%.c=$(BUILD_DIR)/%.o)

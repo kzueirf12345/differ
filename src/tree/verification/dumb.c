@@ -7,7 +7,7 @@
 #include "tree/verification/dumb.h"
 #include "utils/utils.h"
 #include "logger/liblogger.h"
-#include "tree/funcs.h"
+#include "tree/funcs/funcs.h"
 #include "tree/operation/operation.h"
 
 static const char* const HTML_INTRO_ =

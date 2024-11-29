@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 #include "tree/operation/op_diff.h"
-#include "tree/funcs.h"
+#include "tree/funcs/funcs.h"
 #include "logger/liblogger.h"
 
 #define _OPERATION(name, lt, rt) \

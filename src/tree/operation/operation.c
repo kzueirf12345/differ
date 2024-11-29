@@ -1,7 +1,7 @@
 #include <stdio.h>
 
 #include "tree/operation/operation.h"
-#include "tree/funcs.h"
+#include "tree/funcs/funcs.h"
 #include "tree/operation/op_math.h"
 #include "tree/operation/op_diff.h"
 

@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#include "tree/funcs.h"
+#include "tree/funcs/funcs.h"
 #include "logger/liblogger.h"
 #include "utils/utils.h"
 #include "tree/operation/operation.h"
