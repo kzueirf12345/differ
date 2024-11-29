@@ -8,6 +8,7 @@
 #include "utils/utils.h"
 #include "logger/liblogger.h"
 #include "tree/funcs.h"
+#include "tree/operation/operation.h"
 
 static const char* const HTML_INTRO_ =
     "\n<!DOCTYPE html>\n"
@@ -415,7 +416,7 @@ int dot_print_node_(const tree_data_u data, const enum NodeType data_type, const
         fprintf(DUMBER_.dot_file, 
                 "node%zu [shape=Mrecord; label = \"{{%zu|%s|size=%zu}|%s}\"; fillcolor = peachpuff];\n",
                 node_count_, node_count_, node_type_to_str(data_type), size, 
-                op_type_to_str(data.op));
+                OPERATIONS[data.op].name);
         break;
     default:
         return -1;

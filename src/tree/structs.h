@@ -1,11 +1,7 @@
-#ifndef DIFFER_SRC_TREE_TREE_STRUCTS_H
-#define DIFFER_SRC_TREE_TREE_STRUCTS_H
+#ifndef DIFFER_SRC_TREE_STRUCTS_H
+#define DIFFER_SRC_TREE_STRUCTS_H
 
 #include <stdio.h>
-#include <assert.h>
-#include <math.h>
-
-
 
 enum NodeType
 {
@@ -14,45 +10,29 @@ enum NodeType
     NODE_TYPE_OP  = 2
 };
 
+#define OPERATION_HANDLE(_type, _name, _tex_name, _count_operands, _notation, _num)                 \
+        OP_TYPE_##_type = _num,
+
 enum OpType
 {
-    OP_TYPE_SUM     = '+',
-    OP_TYPE_SUB     = '-',
-    OP_TYPE_MUL     = '*',
-    OP_TYPE_DIV     = '/',
-    OP_TYPE_POW     = '^',
-
-    OP_TYPE_SIN     = 's',
-    OP_TYPE_COS     = 'c',
-    OP_TYPE_TG      = 't',
-    OP_TYPE_CTG     = 'c' + 't',
-
-    OP_TYPE_ARCSIN  = 'a' + 's',
-    OP_TYPE_ARCCOS  = 'a' + 'c',
-    OP_TYPE_ARCTG   = 'a' + 't',
-    OP_TYPE_ARCCTG  = 'a' + 'c' + 't', 
-
-    OP_TYPE_SH      = 's' + 'h',
-    OP_TYPE_CH      = 'c' + 'h',
-    OP_TYPE_TH      = 't' + 'h',
-    OP_TYPE_CTH     = 'c' + 't' + 'h',
-
-    OP_TYPE_LOG     = 'l',
-
-    OP_TYPE_UNKNOWN = 0
+    #include "tree/operation/codegen.h"
+    MAX_OP_TYPE
 };
-static_assert(OP_TYPE_UNKNOWN == 0);
+
+#undef OPERATION_HANDLE
+
+typedef double operand_t;
 
 typedef union TreeData
 {
-    double num;
+    operand_t num;
     enum OpType op;
     int var;
 } tree_data_u;
 
 typedef struct Tree
-{ 
-    tree_data_u data;
+{
+    tree_data_u   data;
     enum NodeType type;
 
     struct Tree* lt;
@@ -62,4 +42,4 @@ typedef struct Tree
     size_t size;
 } tree_t;
 
-#endif /* DIFFER_SRC_TREE_TREE_STRUCTS_H */
+#endif /* DIFFER_SRC_TREE_STRUCTS_H */

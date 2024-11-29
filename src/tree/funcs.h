@@ -5,7 +5,6 @@
 #include "verification/verification.h"
 
 const char* node_type_to_str(const enum NodeType type);
-const char*   op_type_to_str(const enum OpType   type);
 enum OpType   str_to_op_type(const char* const str);
 
 tree_t* tree_ctor   (tree_data_u data, enum NodeType type, 
@@ -16,11 +15,8 @@ void    tree_dtor   (tree_t* const tree);
 tree_t* tree_copy   (const tree_t* const tree, tree_t* const pt);
 tree_t* tree_diff   (const tree_t* const tree, tree_t* const pt, FILE* out);
 
-enum TreeError tree_print_preorder(FILE* out, const tree_t* const tree);
-enum TreeError tree_print_inorder (FILE* out, const tree_t* const tree);
-enum TreeError tree_print_tex     (FILE* out, const tree_t* const tree);
-enum TreeError tree_read_preorder (const char* const in_name, tree_t** tree);
-enum TreeError tree_read_inorder  (const char* const in_name, tree_t** tree);
+enum TreeError tree_print_tex(FILE* out, const tree_t* const tree);
+enum TreeError tree_read     (const char* const in_name, tree_t** tree);
 
 enum TreeError tree_simplify(tree_t* const tree, FILE* out);
 

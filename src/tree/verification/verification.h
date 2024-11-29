@@ -20,6 +20,7 @@ enum TreeError
     TREE_ERROR_RT_PT_INCORRECT      = 9,
     TREE_ERROR_SIZE_GREATER         = 10,
     TREE_ERROR_SIZE_LESSER          = 11,
+    TREE_ERROR_DESC                 = 12,
 
     TREE_ERROR_UNKNOWN              = 20,
 };

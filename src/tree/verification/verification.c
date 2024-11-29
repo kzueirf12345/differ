@@ -19,6 +19,7 @@ const char* tree_strerror(const enum TreeError error)
         CASE_ENUM_TO_STRING_(TREE_ERROR_RT_PT_INCORRECT);
         CASE_ENUM_TO_STRING_(TREE_ERROR_SIZE_GREATER);
         CASE_ENUM_TO_STRING_(TREE_ERROR_SIZE_LESSER);
+        CASE_ENUM_TO_STRING_(TREE_ERROR_DESC);
 
         
         default:
