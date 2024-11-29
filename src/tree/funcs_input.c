@@ -32,10 +32,11 @@ static enum TreeError init_str_from_file_     (const char* const input_filename,
                                                size_t* const str_size);
 static enum TreeError init_str_size_from_file_(size_t* const str_size, const int fd);
 
-tree_t* desc_start              (desc_state_t* const desc_state);
+tree_t*     desc_start              (desc_state_t* const desc_state);
 
 tree_t*     desc_sum                (desc_state_t* const desc_state);
 tree_t*     desc_mul                (desc_state_t* const desc_state);
+tree_t*     desc_pow                (desc_state_t* const desc_state);
 
 tree_t*     desc_func               (desc_state_t* const desc_state);
 tree_t*     desc_binary_func        (desc_state_t* const desc_state);
@@ -43,7 +44,6 @@ enum OpType desc_binary_func_names  (desc_state_t* const desc_state);
 tree_t*     desc_unary_func         (desc_state_t* const desc_state);
 enum OpType desc_unary_func_names   (desc_state_t* const desc_state);
 
-tree_t*     desc_pow                (desc_state_t* const desc_state);
 tree_t*     desc_brakets            (desc_state_t* const desc_state);
 tree_t*     desc_num_var            (desc_state_t* const desc_state);
 tree_t*     desc_double             (desc_state_t* const desc_state);
@@ -93,7 +93,7 @@ static enum TreeError init_str_from_file_(const char* const input_filename, char
 
     *str = mmap(NULL, *str_size, PROT_READ, MAP_PRIVATE, fd, 0);
 
-    if (*str  == MAP_FAILED)
+    if (*str == MAP_FAILED)
     {
         perror("Can't mmap");
         return TREE_ERROR_STANDARD_ERRNO;
@@ -261,6 +261,40 @@ tree_t* desc_mul(desc_state_t* const desc_state)
     return tree;
 }
 
+tree_t* desc_pow(desc_state_t* const desc_state)
+{
+    _CHECK_ERROR;
+
+    tree_t* tree = desc_brakets(desc_state);
+    _CHECK_ERROR;
+
+    while(_CUR_SYM == '^')
+    {
+        char op = _CUR_SYM;
+        _SHIFT;
+
+        tree_t* tree2 = desc_func(desc_state);
+        if (_IS_FAILURE)
+        {
+            tree_dtor(tree);
+            _RET_FAILURE;
+        }
+        
+        switch (op)
+        {
+        case '^':
+            tree = _POW(tree, tree2);
+            break;
+        
+        default:
+            tree_dtor(tree);
+            tree_dtor(tree2);
+            _RET_FAILURE;
+        }
+    }
+    return tree;
+}
+
 tree_t* desc_func(desc_state_t* const desc_state)
 {
     _CHECK_ERROR;
@@ -276,7 +310,6 @@ tree_t* desc_func(desc_state_t* const desc_state)
     _CUR_IND = old_ind;
 
     tree = desc_unary_func(desc_state);
-
     if (!_IS_FAILURE)
         return tree;
     
@@ -284,6 +317,7 @@ tree_t* desc_func(desc_state_t* const desc_state)
     _CUR_IND = old_ind;
 
     tree = desc_pow(desc_state);
+    _CHECK_ERROR;
 
     return tree;
 }
@@ -425,40 +459,6 @@ enum OpType desc_unary_func_names(desc_state_t* const desc_state)
     _CUR_IND += strlen(OPERATIONS[type].name);
 
     return type;
-}
-
-tree_t* desc_pow(desc_state_t* const desc_state)
-{
-    _CHECK_ERROR;
-
-    tree_t* tree = desc_brakets(desc_state);
-    _CHECK_ERROR;
-
-    while(_CUR_SYM == '^')
-    {
-        char op = _CUR_SYM;
-        _SHIFT;
-
-        tree_t* tree2 = desc_pow(desc_state);
-        if (_IS_FAILURE)
-        {
-            tree_dtor(tree);
-            _RET_FAILURE;
-        }
-        
-        switch (op)
-        {
-        case '^':
-            tree = _POW(tree, tree2);
-            break;
-        
-        default:
-            tree_dtor(tree);
-            tree_dtor(tree2);
-            _RET_FAILURE;
-        }
-    }
-    return tree;
 }
 
 tree_t* desc_brakets(desc_state_t* const desc_state)

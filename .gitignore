@@ -58,6 +58,7 @@ dkms.conf
 
 *.log
 CMakePresets.json
+log/*
 
 dumb_graph_count.txt
 dumb.dot

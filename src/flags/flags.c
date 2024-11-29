@@ -30,11 +30,25 @@ enum FlagsError flags_objs_ctor(flags_objs_t* const flags_objs)
         return FLAGS_ERROR_SUCCESS;
     }
 
+    if (!strncpy(flags_objs->in_filename, "./assets/input.txt", FILENAME_MAX_SIZE))
+    {
+        perror("Can't strncpy flags_objs->log_folder");
+        return FLAGS_ERROR_SUCCESS;
+    }
+
+    if (!strncpy(flags_objs->out_filename, "./assets/output.tex", FILENAME_MAX_SIZE))
+    {
+        perror("Can't strncpy flags_objs->log_folder");
+        return FLAGS_ERROR_SUCCESS;
+    }
+
     flags_objs->in_file  = NULL;
     flags_objs->out_file = NULL;
 
     return FLAGS_ERROR_SUCCESS;
 }
+
+enum FlagsError generate_pdf_(flags_objs_t* const flags_objs);
 
 enum FlagsError flags_objs_dtor (flags_objs_t* const flags_objs)
 {
@@ -47,12 +61,63 @@ enum FlagsError flags_objs_dtor (flags_objs_t* const flags_objs)
     }
     IF_DEBUG(flags_objs->in_file  = NULL;)
 
-    if (flags_objs->out_file && fclose(flags_objs->out_file))
+    if (flags_objs->out_file)
     {
-        perror("Can't fclose out_file");
-        return FLAGS_ERROR_FAILURE;
+        fprintf(flags_objs->out_file, "\n\\end{document}");
+
+        if (fclose(flags_objs->out_file))
+        {
+            perror("Can't fclose out_file");
+            return FLAGS_ERROR_FAILURE;
+        }
     }
     IF_DEBUG(flags_objs->out_file = NULL;)
+
+    FLAGS_ERROR_HANDLE(generate_pdf_(flags_objs));
+
+    return FLAGS_ERROR_SUCCESS;
+}
+
+enum FlagsError generate_pdf_(flags_objs_t* const flags_objs)
+{
+    lassert(!is_invalid_ptr(flags_objs), "");
+
+    char pdf_directory[FILENAME_MAX_SIZE] = {};
+
+    if (!strncpy(pdf_directory, flags_objs->out_filename, FILENAME_MAX_SIZE))
+    {
+        perror("Can't strncpy pdf_directory");
+        return FLAGS_ERROR_FAILURE;
+    }
+
+    *strchr(pdf_directory, '.') = '\0';
+
+    char system_cmd[FILENAME_MAX_SIZE] = {};
+
+    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "mkdir %s", pdf_directory) < 0)
+    {
+        perror("Can't snprintf system cmd mkdir");
+        return FLAGS_ERROR_FAILURE;
+    }
+
+    if (system(system_cmd) == -1)
+    {
+        perror("Can't system mkdir pdf");
+        return FLAGS_ERROR_FAILURE;
+    }
+
+    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "pdflatex --output-directory=%s %s",
+                 pdf_directory, flags_objs->out_filename) < 0)
+    {
+        perror("Can't snprintf system cmd");
+        return FLAGS_ERROR_SUCCESS;
+    }
+
+    if (system(system_cmd) == -1)
+    {
+        perror("Can't system create pdf");
+        return FLAGS_ERROR_FAILURE;
+    }
 
     return FLAGS_ERROR_SUCCESS;
 }
@@ -107,6 +172,26 @@ enum FlagsError flags_processing(flags_objs_t* const flags_objs,
             }
         }
     }
+
+    lassert(strcmp(flags_objs->in_filename, flags_objs->out_filename) != 0, "");
+
+    if (!(flags_objs->in_file = fopen(flags_objs->in_filename, "rb")))
+    {
+        perror("Can't fopen in_file");
+        return FLAGS_ERROR_FAILURE;
+    }
+
+    if (!(flags_objs->out_file = fopen(flags_objs->out_filename, "wb")))
+    {
+        perror("Can't fopen out_file");
+        return FLAGS_ERROR_FAILURE;
+    }
+
+    fprintf(flags_objs->out_file, 
+        "\\documentclass[a4paper]{article}\n"
+        "\\usepackage{amsmath}\n"
+        "\n"
+        "\\begin{document}\n");
 
     return FLAGS_ERROR_SUCCESS;
 }

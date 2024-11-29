@@ -1,6 +1,7 @@
 <start> ::= <sum> "$"
 <sum> ::= <mul> (("+" | "-") <mul>)*
 <mul> ::= <func> (("*" | "/") <func>)*
+<pow> ::= <brakets> ("^" <func>)*
 
 <func> ::= <binary_func> | <unary_func> | <pow>
 <binary_func> ::= 
@@ -13,8 +14,6 @@
     "arcsin" | "arccos" | "arctg" | "arcctg" |
     "sh" | "ch" | "th" | "cth"
 <binary_func_names> ::= "log"
-
-<pow> ::= <brakets> ("^" <pow>)*
 
 <brakets> ::= "(" <sum> ")" | <num_var>
 <num_var> ::= <double> | <var>

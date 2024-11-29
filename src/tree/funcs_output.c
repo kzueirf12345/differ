@@ -27,16 +27,11 @@ enum TreeError tree_print_tex (FILE* out, const tree_t* const tree)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    fprintf(out, "\\documentclass[a4paper]{article}\n"
-                 "\\usepackage{amsmath}\n"
-                 "\n"
-                 "\\begin{document}\n"
-                 "$$\n");
+    fprintf(out, "\n$$\n");
     
     TREE_ERROR_HANDLE(tree_print_tex_recursive_(out, tree));
 
-    fprintf(out, "\n$$\n"
-                 "\\end{document}\n");
+    fprintf(out, "\n$$\n");
 
     return TREE_ERROR_SUCCESS;
 }

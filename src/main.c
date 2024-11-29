@@ -34,35 +34,25 @@ int main(const int argc, char* const argv[])
     tree_t* tree1_diff = tree_diff(tree1, NULL, stdout);
 
     tree_t* tree2 = NULL;
-    TREE_ERROR_HANDLE(tree_read("assets/temp1.txt", &tree2),
+    TREE_ERROR_HANDLE(tree_read(flags_objs.in_filename, &tree2),
                                        tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
     );
 
-    tree_dumb(tree2);
+    tree_t* tree2_diff = tree_diff(tree2, NULL, stdout);
 
-    FILE* out = fopen("assets/temp1.tex", "wb");
-
-    TREE_ERROR_HANDLE(tree_print_tex(out, tree2),          
-                      tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
+    TREE_ERROR_HANDLE(tree_print_tex(flags_objs.out_file, tree2),          
+tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
     );
 
-    if (fclose(out))
-    {
-        perror("Can't fclose out");
-                      tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-        return EXIT_FAILURE;
-    }
 
-    if (system("pdflatex --output-directory=./assets/ assets/temp1.tex") == -1)
-    {
-        perror("Can't system create pdf");
-                      tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-        return EXIT_FAILURE;
-    }
+    TREE_ERROR_HANDLE(tree_print_tex(flags_objs.out_file, tree2_diff),          
+tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
+    );
 
     tree_dtor(tree1);
     tree_dtor(tree1_diff);
     tree_dtor(tree2);
+    tree_dtor(tree2_diff);
 
     
     if (dtor_all(&flags_objs))

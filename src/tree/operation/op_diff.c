@@ -166,7 +166,7 @@ tree_t* diff_SIN (const tree_t* const tree, tree_t* const pt, FILE* out)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _MUL(_COS(NULL, _cRT), _dRT);
+    tree_t* const new_tree = _MUL(_COS(NULL, _cLT), _dLT);
 
     tree_fill_pt(new_tree, pt);
 
@@ -180,7 +180,7 @@ tree_t* diff_COS (const tree_t* const tree, tree_t* const pt, FILE* out)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _MUL(_MUL(_NUM(-1), _SIN(NULL, _cRT)), _dRT);
+    tree_t* const new_tree = _MUL(_MUL(_NUM(-1), _SIN(NULL, _cLT)), _dLT);
 
     tree_fill_pt(new_tree, pt);
 
@@ -194,7 +194,7 @@ tree_t* diff_TG (const tree_t* const tree, tree_t* const pt, FILE* out)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _DIV(_dRT, _POW(_COS(NULL, _cRT), _NUM(2)));
+    tree_t* const new_tree = _DIV(_dLT, _POW(_COS(NULL, _cLT), _NUM(2)));
 
     tree_fill_pt(new_tree, pt);
 
@@ -208,7 +208,7 @@ tree_t* diff_CTG (const tree_t* const tree, tree_t* const pt, FILE* out)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _MUL(_NUM(-1), _DIV(_dRT, _POW(_SIN(NULL, _cRT), _NUM(2))));
+    tree_t* const new_tree = _MUL(_NUM(-1), _DIV(_dLT, _POW(_SIN(NULL, _cLT), _NUM(2))));
 
     tree_fill_pt(new_tree, pt);
 
@@ -222,7 +222,7 @@ tree_t* diff_ARCSIN (const tree_t* const tree, tree_t* const pt, FILE* out)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _DIV(_dRT, _POW(_SUB(_NUM(1), _POW(_cRT, _NUM(2))), 
+    tree_t* const new_tree = _DIV(_dLT, _POW(_SUB(_NUM(1), _POW(_cLT, _NUM(2))), 
                                              _DIV(_NUM(1), _NUM(2))));
 
     tree_fill_pt(new_tree, pt);
@@ -251,7 +251,7 @@ tree_t* diff_ARCTG (const tree_t* const tree, tree_t* const pt, FILE* out)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
     
-    tree_t* const new_tree = _DIV(_dRT, _SUM(_NUM(1), _POW(_cRT, _NUM(2))));
+    tree_t* const new_tree = _DIV(_dLT, _SUM(_NUM(1), _POW(_cLT, _NUM(2))));
 
     tree_fill_pt(new_tree, pt);
 
@@ -279,7 +279,7 @@ tree_t* diff_SH (const tree_t* const tree, tree_t* const pt, FILE* out)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _MUL(_CH(NULL, _cRT), _dRT);
+    tree_t* const new_tree = _MUL(_CH(NULL, _cLT), _dLT);
 
     tree_fill_pt(new_tree, pt);
 
@@ -293,7 +293,7 @@ tree_t* diff_CH (const tree_t* const tree, tree_t* const pt, FILE* out)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _MUL(_SH(NULL, _cRT), _dRT);
+    tree_t* const new_tree = _MUL(_SH(NULL, _cLT), _dLT);
 
     tree_fill_pt(new_tree, pt);
 
@@ -307,7 +307,7 @@ tree_t* diff_TH (const tree_t* const tree, tree_t* const pt, FILE* out)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _DIV(_dRT, _POW(_CH(NULL, _cRT), _NUM(2)));
+    tree_t* const new_tree = _DIV(_dLT, _POW(_CH(NULL, _cLT), _NUM(2)));
 
     tree_fill_pt(new_tree, pt);
 
@@ -321,7 +321,7 @@ tree_t* diff_CTH (const tree_t* const tree, tree_t* const pt, FILE* out)
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(out), "");
 
-    tree_t* const new_tree = _MUL(_NUM(-1), _DIV(_dRT, _POW(_SH(NULL, _cRT), _NUM(2))));
+    tree_t* const new_tree = _MUL(_NUM(-1), _DIV(_dLT, _POW(_SH(NULL, _cLT), _NUM(2))));
 
     tree_fill_pt(new_tree, pt);
 

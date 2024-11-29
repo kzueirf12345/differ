@@ -42,4 +42,11 @@ typedef struct Tree
     size_t size;
 } tree_t;
 
+typedef struct TexStreams
+{
+    FILE* file;
+    char* filename;
+    
+} tex_streams_t;
+
 #endif /* DIFFER_SRC_TREE_STRUCTS_H */
