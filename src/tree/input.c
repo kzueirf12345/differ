@@ -32,15 +32,23 @@ static enum TreeError init_str_from_file_     (const char* const input_filename,
                                                size_t* const str_size);
 static enum TreeError init_str_size_from_file_(size_t* const str_size, const int fd);
 
-tree_t* desc_start  (desc_state_t* const desc_state);
-tree_t* desc_sum    (desc_state_t* const desc_state);
-tree_t* desc_mul    (desc_state_t* const desc_state);
-tree_t* desc_pow    (desc_state_t* const desc_state);
-tree_t* desc_brakets(desc_state_t* const desc_state);
-tree_t* desc_num_var(desc_state_t* const desc_state);
-tree_t* desc_double (desc_state_t* const desc_state);
-tree_t* desc_uint    (desc_state_t* const desc_state);
-tree_t* desc_var    (desc_state_t* const desc_state);
+tree_t* desc_start              (desc_state_t* const desc_state);
+
+tree_t*     desc_sum                (desc_state_t* const desc_state);
+tree_t*     desc_mul                (desc_state_t* const desc_state);
+
+tree_t*     desc_func               (desc_state_t* const desc_state);
+tree_t*     desc_binary_func        (desc_state_t* const desc_state);
+enum OpType desc_binary_func_names  (desc_state_t* const desc_state);
+tree_t*     desc_unary_func         (desc_state_t* const desc_state);
+enum OpType desc_unary_func_names   (desc_state_t* const desc_state);
+
+tree_t*     desc_pow                (desc_state_t* const desc_state);
+tree_t*     desc_brakets            (desc_state_t* const desc_state);
+tree_t*     desc_num_var            (desc_state_t* const desc_state);
+tree_t*     desc_double             (desc_state_t* const desc_state);
+tree_t*     desc_uint               (desc_state_t* const desc_state);
+tree_t*     desc_var                (desc_state_t* const desc_state);
 
 enum TreeError tree_read(const char* const in_name, tree_t** tree)
 {
@@ -177,7 +185,7 @@ tree_t* desc_start(desc_state_t* const desc_state)
     return tree;
 }
 
-tree_t* desc_sum    (desc_state_t* const desc_state)
+tree_t* desc_sum(desc_state_t* const desc_state)
 {
     _CHECK_ERROR;
 
@@ -215,11 +223,11 @@ tree_t* desc_sum    (desc_state_t* const desc_state)
     return tree;
 }
 
-tree_t* desc_mul (desc_state_t* const desc_state)
+tree_t* desc_mul(desc_state_t* const desc_state)
 {
     _CHECK_ERROR;
 
-    tree_t* tree = desc_pow(desc_state);
+    tree_t* tree = desc_func(desc_state);
     _CHECK_ERROR;
 
     while(_CUR_SYM == '*' || _CUR_SYM == '/')
@@ -227,7 +235,7 @@ tree_t* desc_mul (desc_state_t* const desc_state)
         char op = _CUR_SYM;
         _SHIFT;
 
-        tree_t* tree2 = desc_pow(desc_state);
+        tree_t* tree2 = desc_func(desc_state);
 
         if (_IS_FAILURE)
         {
@@ -253,6 +261,172 @@ tree_t* desc_mul (desc_state_t* const desc_state)
     return tree;
 }
 
+tree_t* desc_func(desc_state_t* const desc_state)
+{
+    _CHECK_ERROR;
+
+    size_t old_ind = _CUR_IND;
+
+    tree_t* tree = desc_binary_func(desc_state);
+
+    if (!_IS_FAILURE)
+        return tree;
+    
+    _NORMALIZE_ERROR;
+    _CUR_IND = old_ind;
+
+    tree = desc_unary_func(desc_state);
+
+    if (!_IS_FAILURE)
+        return tree;
+    
+    _NORMALIZE_ERROR;
+    _CUR_IND = old_ind;
+
+    tree = desc_pow(desc_state);
+
+    return tree;
+}
+
+#define OPERATION_HANDLE(name, ...) \
+        case OP_TYPE_##name: return _##name(lt, rt);
+
+tree_t* desc_binary_func(desc_state_t* const desc_state)
+{
+    _CHECK_ERROR;
+
+    enum OpType type = desc_binary_func_names(desc_state);
+    _CHECK_ERROR;
+
+    if (_CUR_SYM != '{')
+    {
+        _RET_FAILURE;
+    }
+    _SHIFT;
+
+    tree_t* lt = desc_sum(desc_state);
+    _CHECK_ERROR;
+
+    if (_CUR_SYM != '}')
+    {
+        tree_dtor(lt);
+        _RET_FAILURE;
+    }
+    _SHIFT;
+
+    if (_CUR_SYM != '{')
+    {
+        tree_dtor(lt);
+        _RET_FAILURE;
+    }
+    _SHIFT;
+
+    tree_t* rt = desc_sum(desc_state);
+
+    if (_IS_FAILURE)
+    {
+        tree_dtor(lt);
+        _RET_FAILURE;
+    }
+
+    if (_CUR_SYM != '}')
+    {
+        tree_dtor(lt);
+        tree_dtor(rt);
+        _RET_FAILURE;
+    }
+    _SHIFT;
+
+    switch (type)
+    {
+        #include "tree/operation/codegen.h"
+
+        case MAX_OP_TYPE:
+        default:
+            tree_dtor(lt);
+            tree_dtor(rt);
+            _RET_FAILURE;
+    }
+
+    tree_dtor(lt);
+    tree_dtor(rt);
+    _RET_FAILURE;
+}
+
+enum OpType desc_binary_func_names(desc_state_t* const desc_state)
+{                                                                                     
+    lassert(!is_invalid_ptr(desc_state), "");                                               
+    if (desc_state->error == DESC_ERROR_FAILURE)
+    {
+        fprintf(stderr, "Can't %s line: %d\n", __func__, __LINE__); 
+        return MAX_OP_TYPE;                                
+    }
+
+    enum OpType type = str_to_op_type(desc_state->str + desc_state->ind);
+
+    if (type == MAX_OP_TYPE)
+    {
+        fprintf(stderr, "Can't %s line: %d\n", __func__, __LINE__);                                 
+        desc_state->error = DESC_ERROR_FAILURE;
+        return type;
+    }
+
+    _CUR_IND += strlen(OPERATIONS[type].name);
+
+    return type;
+}  
+
+tree_t* desc_unary_func(desc_state_t* const desc_state)
+{
+    _CHECK_ERROR;
+
+    enum OpType type = desc_unary_func_names(desc_state);
+    _CHECK_ERROR;
+
+    tree_t* lt = desc_func(desc_state);
+    _CHECK_ERROR;
+
+    tree_t* rt = NULL;
+
+    switch (type)
+    {
+        #include "tree/operation/codegen.h"
+
+        case MAX_OP_TYPE:
+        default:
+            tree_dtor(lt);
+            _RET_FAILURE;
+    }
+
+    tree_dtor(lt);
+    _RET_FAILURE;
+}
+
+#undef OPERATION_HANDLE
+
+enum OpType desc_unary_func_names(desc_state_t* const desc_state)
+{
+    lassert(!is_invalid_ptr(desc_state), "");                                               
+    if (desc_state->error == DESC_ERROR_FAILURE)
+    {
+        fprintf(stderr, "Can't %s line: %d\n", __func__, __LINE__); 
+        return MAX_OP_TYPE;                                
+    }
+
+    enum OpType type = str_to_op_type(desc_state->str + desc_state->ind);
+
+    if (type == MAX_OP_TYPE)
+    {
+        fprintf(stderr, "Can't %s line: %d\n", __func__, __LINE__);                                 
+        desc_state->error = DESC_ERROR_FAILURE;
+        return type;
+    }
+
+    _CUR_IND += strlen(OPERATIONS[type].name);
+
+    return type;
+}
+
 tree_t* desc_pow(desc_state_t* const desc_state)
 {
     _CHECK_ERROR;
@@ -265,7 +439,7 @@ tree_t* desc_pow(desc_state_t* const desc_state)
         char op = _CUR_SYM;
         _SHIFT;
 
-        tree_t* tree2 = desc_brakets(desc_state);
+        tree_t* tree2 = desc_pow(desc_state);
         if (_IS_FAILURE)
         {
             tree_dtor(tree);

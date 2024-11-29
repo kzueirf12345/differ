@@ -38,6 +38,8 @@ int main(const int argc, char* const argv[])
                                        tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
     );
 
+    tree_dumb(tree2);
+
     FILE* out = fopen("assets/temp1.tex", "wb");
 
     TREE_ERROR_HANDLE(tree_print_tex(out, tree2),          
