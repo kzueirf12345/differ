@@ -106,7 +106,7 @@ enum FlagsError generate_pdf_(flags_objs_t* const flags_objs)
         return FLAGS_ERROR_FAILURE;
     }
 
-    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "pdflatex --output-directory=%s %s > /dev/null",
+    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "pdflatex --output-directory=%s %s > /dev/null", //FIXME simplify
                  pdf_directory, flags_objs->out_filename) < 0)
     {
         perror("Can't snprintf system cmd");
