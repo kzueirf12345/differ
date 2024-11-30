@@ -400,6 +400,20 @@ tree_t* diff_LOG_nlt_rt_(const tree_t* const tree, tree_t* const pt, FILE* out)
     return new_tree;
 }
 
+tree_t* diff_LN(const tree_t* const tree, tree_t* const pt, FILE* out)
+{
+    TREE_VERIFY(tree);
+    lassert(!is_invalid_ptr(out), "");
+
+    tree_t* const new_tree = _DIV(_dLT, _cLT);
+
+    tree_fill_pt(new_tree, pt);
+
+    TREE_VERIFY(new_tree);
+
+    return new_tree;
+}
+
 #undef _SUM
 #undef _SUB
 #undef _MUL

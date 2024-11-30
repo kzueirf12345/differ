@@ -168,6 +168,7 @@ static enum TreeError init_str_size_from_file_ (size_t* const str_size, const in
 #define _TH(lt, rt)     _OPERATION(TH,      lt, rt)
 #define _CTH(lt, rt)    _OPERATION(CTH,     lt, rt)
 #define _LOG(lt, rt)    _OPERATION(LOG,     lt, rt)
+#define _LN(lt, rt)     _OPERATION(LN,      lt, rt)
 
 #define _NUM(numm) tree_ctor((tree_data_u){.num = numm}, NODE_TYPE_NUM, NULL, NULL, NULL)
 #define _VAR(name) tree_ctor((tree_data_u){.var = name}, NODE_TYPE_VAR, NULL, NULL, NULL)
@@ -227,7 +228,7 @@ tree_t* desc_mul(desc_state_t* const desc_state)
 {
     _CHECK_ERROR;
 
-    tree_t* tree = desc_func(desc_state);
+    tree_t* tree = desc_pow(desc_state);
     _CHECK_ERROR;
 
     while(_CUR_SYM == '*' || _CUR_SYM == '/')
@@ -235,7 +236,7 @@ tree_t* desc_mul(desc_state_t* const desc_state)
         char op = _CUR_SYM;
         _SHIFT;
 
-        tree_t* tree2 = desc_func(desc_state);
+        tree_t* tree2 = desc_pow(desc_state);
 
         if (_IS_FAILURE)
         {
@@ -265,7 +266,7 @@ tree_t* desc_pow(desc_state_t* const desc_state)
 {
     _CHECK_ERROR;
 
-    tree_t* tree = desc_brakets(desc_state);
+    tree_t* tree = desc_func(desc_state);
     _CHECK_ERROR;
 
     while(_CUR_SYM == '^')
@@ -273,7 +274,7 @@ tree_t* desc_pow(desc_state_t* const desc_state)
         char op = _CUR_SYM;
         _SHIFT;
 
-        tree_t* tree2 = desc_func(desc_state);
+        tree_t* tree2 = desc_pow(desc_state);
         if (_IS_FAILURE)
         {
             tree_dtor(tree);
@@ -310,13 +311,16 @@ tree_t* desc_func(desc_state_t* const desc_state)
     _CUR_IND = old_ind;
 
     tree = desc_unary_func(desc_state);
+
     if (!_IS_FAILURE)
+    {
         return tree;
+    }
     
     _NORMALIZE_ERROR;
     _CUR_IND = old_ind;
 
-    tree = desc_pow(desc_state);
+    tree = desc_brakets(desc_state);
     _CHECK_ERROR;
 
     return tree;
@@ -398,7 +402,7 @@ enum OpType desc_binary_func_names(desc_state_t* const desc_state)
 
     enum OpType type = str_to_op_type(desc_state->str + desc_state->ind);
 
-    if (type == MAX_OP_TYPE)
+    if (type == MAX_OP_TYPE || OPERATIONS[type].count_operands != 2)
     {
         fprintf(stderr, "Can't %s line: %d\n", __func__, __LINE__);                                 
         desc_state->error = DESC_ERROR_FAILURE;
@@ -417,8 +421,21 @@ tree_t* desc_unary_func(desc_state_t* const desc_state)
     enum OpType type = desc_unary_func_names(desc_state);
     _CHECK_ERROR;
 
-    tree_t* lt = desc_func(desc_state);
+    if (_CUR_SYM != '{')
+    {
+        _RET_FAILURE;
+    }
+    _SHIFT;
+
+    tree_t* lt = desc_sum(desc_state);
     _CHECK_ERROR;
+
+    if (_CUR_SYM != '}')
+    {
+        tree_dtor(lt);
+        _RET_FAILURE;
+    }
+    _SHIFT;
 
     tree_t* rt = NULL;
 
@@ -449,7 +466,7 @@ enum OpType desc_unary_func_names(desc_state_t* const desc_state)
 
     enum OpType type = str_to_op_type(desc_state->str + desc_state->ind);
 
-    if (type == MAX_OP_TYPE)
+    if (type == MAX_OP_TYPE || OPERATIONS[type].count_operands != 1)
     {
         fprintf(stderr, "Can't %s line: %d\n", __func__, __LINE__);                                 
         desc_state->error = DESC_ERROR_FAILURE;
@@ -530,6 +547,7 @@ tree_t* desc_double(desc_state_t* const desc_state)
     tree_t* tree_int = desc_uint(desc_state);
 
     _CHECK_ERROR;
+
 
     double frac_val = 0;
     if (_CUR_SYM == '.')

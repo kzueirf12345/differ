@@ -149,3 +149,13 @@ operand_t math_LOG        (const operand_t first, const operand_t second, FILE* 
 
     return log(first) / log(second);
 }
+operand_t math_LN        (const operand_t first, const operand_t second, FILE* out)
+{
+    lassert(!is_invalid_ptr(out), "");
+    (void)second;
+
+    if (first < 0)
+        return NAN;
+
+    return log(first);
+}

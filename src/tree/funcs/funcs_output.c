@@ -132,6 +132,7 @@ bool add_braket(const tree_t* const tree)
     case OP_TYPE_CH:
     case OP_TYPE_TH:
     case OP_TYPE_CTH:
+    case OP_TYPE_LN:
     {
         return (tree->type == NODE_TYPE_OP) && (tree->data.op != OP_TYPE_DIV);
     }

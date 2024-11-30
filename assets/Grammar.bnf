@@ -1,18 +1,18 @@
 <start> ::= <sum> "$"
 <sum> ::= <mul> (("+" | "-") <mul>)*
-<mul> ::= <func> (("*" | "/") <func>)*
-<pow> ::= <brakets> ("^" <func>)*
+<mul> ::= <pow> (("*" | "/") <pow>)*
+<pow> ::= <func> ("^" <pow>)*
 
-<func> ::= <binary_func> | <unary_func> | <pow>
+<func> ::= <binary_func> | <unary_func> | <brakets>
 <binary_func> ::= 
     <binary_func_names> 
         "{" <sum> "}"
         "{" <sum> "}" 
-<unary_func> ::= <unary_func_names> <func>
+<unary_func> ::= <unary_func_names> "{" <sum> "}"
 <unary_func_names> ::= 
     "sin" | "cos " | "tg" | "ctg" | 
     "arcsin" | "arccos" | "arctg" | "arcctg" |
-    "sh" | "ch" | "th" | "cth"
+    "sh" | "ch" | "th" | "cth" | "ln"
 <binary_func_names> ::= "log"
 
 <brakets> ::= "(" <sum> ")" | <num_var>
