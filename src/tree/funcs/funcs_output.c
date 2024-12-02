@@ -204,7 +204,7 @@ static enum TreeError tree_print_data_(FILE* out, const tree_data_u data, enum N
         }
         break;
     case NODE_TYPE_VAR:
-        if (fputc((char)data.var, out) <= 0)
+        if (fputc(data.var, out) <= 0)
         {
             perror("Can't fputs var");
             return TREE_ERROR_STANDARD_ERRNO;

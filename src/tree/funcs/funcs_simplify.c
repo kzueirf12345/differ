@@ -87,6 +87,7 @@ enum TreeError tree_simplify_POW_(tree_t** tree, FILE* out, size_t* const count_
 enum TreeError tree_simplify_MUL_(tree_t** tree, FILE* out, size_t* const count_changes);
 enum TreeError tree_simplify_SUM_(tree_t** tree, FILE* out, size_t* const count_changes);
 enum TreeError tree_simplify_SUB_(tree_t** tree, FILE* out, size_t* const count_changes);
+enum TreeError tree_simplify_DIV_(tree_t** tree, FILE* out, size_t* const count_changes);
 
 enum TreeError tree_simplify_trivial_(tree_t** tree, FILE* out, size_t* const count_changes)
 {
@@ -120,6 +121,10 @@ enum TreeError tree_simplify_trivial_(tree_t** tree, FILE* out, size_t* const co
     else if ((*tree)->data.op == OP_TYPE_SUB)
     {
         TREE_ERROR_HANDLE(tree_simplify_SUB_(tree, out, count_changes));
+    }
+    else if ((*tree)->data.op == OP_TYPE_DIV)
+    {
+        TREE_ERROR_HANDLE(tree_simplify_DIV_(tree, out, count_changes));
     }
 
     return TREE_ERROR_SUCCESS;
@@ -231,6 +236,21 @@ enum TreeError tree_simplify_SUB_(tree_t** tree, FILE* out, size_t* const count_
         (*tree)->data.op = OP_TYPE_MUL;
         (*tree)->lt->data.num = -1;
         ++*count_changes;
+    }
+
+    return TREE_ERROR_SUCCESS;
+}
+
+enum TreeError tree_simplify_DIV_(tree_t** tree, FILE* out, size_t* const count_changes)
+{
+    lassert(!is_invalid_ptr(tree), "");
+    TREE_VERIFY(*tree);
+    lassert(!is_invalid_ptr(out), "");
+    lassert(!is_invalid_ptr(count_changes), "");
+
+    if (_IS_ZERO_LT)
+    {
+        _TREE_TO_ZERO;
     }
 
     return TREE_ERROR_SUCCESS;

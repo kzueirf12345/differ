@@ -31,7 +31,7 @@ int main(const int argc, char* const argv[])
 
     tree_fill_pt(tree1, NULL);
 
-    tree_t* tree1_diff = tree_diff(tree1, NULL, stdout);
+    tree_t* tree1_diff = tree_diff(tree1, NULL, 'x', stdout);
 
     tree_t* tree2 = NULL;
     TREE_ERROR_HANDLE(tree_read(flags_objs.in_filename, &tree2),
@@ -42,13 +42,11 @@ int main(const int argc, char* const argv[])
                       tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
     );
 
-    tree_t* tree2_diff = tree_diff(tree2, NULL, stdout);
+    tree_t* tree2_diff = tree_diff(tree2, NULL, 'x', stdout);
 
     TREE_ERROR_HANDLE(tree_simplify(&tree2_diff, stdout),
 tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
     );
-
-    tree_dumb(tree2_diff->rt);
 
 
     TREE_ERROR_HANDLE(tree_print_tex(flags_objs.out_file, tree2),          

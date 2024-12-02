@@ -13,7 +13,7 @@ void    tree_fill_pt(tree_t* const tree, tree_t* const pt);
 void    tree_dtor   (tree_t* const tree);
 
 tree_t* tree_copy   (const tree_t* const tree, tree_t* const pt);
-tree_t* tree_diff   (const tree_t* const tree, tree_t* const pt, FILE* out);
+tree_t* tree_diff   (const tree_t* const tree, tree_t* const pt, const char diff_var, FILE* out);
 
 enum TreeError tree_print_tex(FILE* out, const tree_t* const tree);
 enum TreeError tree_read     (const char* const in_name, tree_t** tree);

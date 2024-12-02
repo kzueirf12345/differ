@@ -29,16 +29,17 @@ tree_t* tree_copy(const tree_t* const tree, tree_t* const pt)
 }
 
 #define OPERATION_HANDLE(_type, _name, _tex_name, _count_operands, _notation, _num)                 \
-        case OP_TYPE_##_type: new_tree = diff_##_type(tree, pt, out); break;
+        case OP_TYPE_##_type: new_tree = diff_##_type(tree, pt, diff_var, out); break;
     
 
-tree_t* tree_diff(const tree_t* const tree, tree_t* const pt, FILE* out)
+tree_t* tree_diff(const tree_t* const tree, tree_t* const pt, const char diff_var, FILE* out)
 {
-    if (tree == NULL) return NULL;
+    if (diff_var == 'e') return NULL;
+    if (tree == NULL)    return NULL;
 
     TREE_VERIFY(tree);
 
-    if (tree->type == NODE_TYPE_NUM)
+    if (tree->type == NODE_TYPE_NUM || (tree->type == NODE_TYPE_VAR && tree->data.var != diff_var))
         return tree_ctor((tree_data_u){.num = 0}, NODE_TYPE_NUM, pt, NULL, NULL);
     
     if (tree->type == NODE_TYPE_VAR)
@@ -55,8 +56,6 @@ tree_t* tree_diff(const tree_t* const tree, tree_t* const pt, FILE* out)
             new_tree = NULL;
             break;
     }
-
-    // tree_dumb(tree);
 
     TREE_VERIFY(new_tree);
 

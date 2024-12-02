@@ -407,10 +407,10 @@ int dot_print_node_(const tree_data_u data, const enum NodeType data_type, const
                 "node%zu [shape=Mrecord; label = \"{{%zu|%s|size=%zu}|%g}\"; fillcolor = pink];\n",
                 node_count_, node_count_, node_type_to_str(data_type), size, data.num);
         break;
-    case NODE_TYPE_VAR: //TODO more vars
+    case NODE_TYPE_VAR:
         fprintf(DUMBER_.dot_file, 
-                "node%zu [shape=Mrecord; label = \"{{%zu|%s|size=%zu}|x}\"; fillcolor = lightyellow];\n",
-                node_count_, node_count_, node_type_to_str(data_type), size);
+                "node%zu [shape=Mrecord; label = \"{{%zu|%s|size=%zu}|%c}\"; fillcolor = lightyellow];\n",
+                node_count_, node_count_, node_type_to_str(data_type), size, data.var);
         break;
     case NODE_TYPE_OP:
         fprintf(DUMBER_.dot_file, 

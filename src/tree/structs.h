@@ -27,7 +27,7 @@ typedef union TreeData
 {
     operand_t num;
     enum OpType op;
-    int var;
+    char var;
 } tree_data_u;
 
 typedef struct Tree
