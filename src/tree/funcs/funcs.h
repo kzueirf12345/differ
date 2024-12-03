@@ -13,10 +13,20 @@ void    tree_fill_pt(tree_t* const tree, tree_t* const pt);
 void    tree_dtor   (tree_t* const tree);
 
 tree_t* tree_copy   (const tree_t* const tree, tree_t* const pt);
-tree_t* tree_diff   (const tree_t* const tree, tree_t* const pt, const char diff_var, FILE* out);
+tree_t* tree_diff   (const tree_t* const tree, tree_t* const pt,    const char diff_var, FILE* out);
+tree_t* tree_ndiff  (const tree_t* const tree, const size_t n_diff, const char diff_var, FILE* out);
+tree_t* tree_val_in_point (const tree_t* const tree, const char diff_var, const operand_t point, 
+                           FILE* out);
+tree_t* tree_taylor_monom(const tree_t* const tree, const size_t order, const char diff_var, 
+                          const operand_t point, FILE* out);
+tree_t* tree_taylor_polynom(const tree_t* const tree, const size_t order, const char diff_var, 
+                            const operand_t point, FILE* out);
 
 enum TreeError tree_print_tex(FILE* out, const tree_t* const tree);
 enum TreeError tree_read     (const char* const in_name, tree_t** tree);
+enum TreeError tree_create_graphic(const tree_t* const tree, const char var, 
+                                   const char* const filename, char* const name,
+                                   const size_t npoints);
 
 enum TreeError tree_simplify(tree_t** tree, FILE* out);
 

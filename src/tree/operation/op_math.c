@@ -28,7 +28,10 @@ operand_t math_DIV        (const operand_t first, const operand_t second, FILE* 
 {
     lassert(!is_invalid_ptr(out), "");
     if (fabs(second) < __DBL_EPSILON__)
+    {
+        fprintf(stderr, "Can't %s\n", __func__);
         return NAN;
+    }
 
     return first / second;
 }
@@ -58,7 +61,10 @@ operand_t math_TG         (const operand_t first, const operand_t second, FILE* 
     (void)second;
 
     if (fabs(cos(first)) < __DBL_EPSILON__)
+    {
+        fprintf(stderr, "Can't %s\n", __func__);
         return NAN;
+    }
 
     return tan(first);
 }
@@ -68,7 +74,10 @@ operand_t math_CTG        (const operand_t first, const operand_t second, FILE* 
     (void)second;
 
     if (fabs(sin(first)) < __DBL_EPSILON__)
+    {
+        fprintf(stderr, "Can't %s\n", __func__);
         return NAN;
+    }
 
     return tan(M_PI_2 - first);
 }
@@ -77,8 +86,11 @@ operand_t math_ARCSIN     (const operand_t first, const operand_t second, FILE* 
     lassert(!is_invalid_ptr(out), "");
     (void)second;
 
-    if (first < -1 && 1 < first)
+    if (first < -1 || 1 < first)
+    {
+        fprintf(stderr, "Can't %s\n", __func__);
         return NAN;
+    }
 
     return asin(first);
 }
@@ -87,8 +99,11 @@ operand_t math_ARCCOS     (const operand_t first, const operand_t second, FILE* 
     lassert(!is_invalid_ptr(out), "");
     (void)second;
 
-    if (first < -1 && 1 < first)
+    if (first < -1 || 1 < first)
+    {
+        fprintf(stderr, "Can't %s\n", __func__);
         return NAN;
+    }
 
     return acos(first);
 }
@@ -126,7 +141,10 @@ operand_t math_TH         (const operand_t first, const operand_t second, FILE* 
     (void)second;
 
     if (fabs(cosh(first)) < __DBL_EPSILON__)
+    {
+        fprintf(stderr, "Can't %s\n", __func__);
         return NAN;
+    }
 
     return tanh(first);
 }
@@ -136,7 +154,10 @@ operand_t math_CTH        (const operand_t first, const operand_t second, FILE* 
     (void)second;
 
     if (fabs(sinh(first)) < __DBL_EPSILON__)
+    {
+        fprintf(stderr, "Can't %s\n", __func__);
         return NAN;
+    }
 
     return 1 / tanh(first);
 }
@@ -144,18 +165,25 @@ operand_t math_LOG        (const operand_t first, const operand_t second, FILE* 
 {
     lassert(!is_invalid_ptr(out), "");
 
-    if (first < 0 || fabs(first - 1) < __DBL_EPSILON__ || second < 0)
+    if (first <= 0 || fabs(first - 1) < __DBL_EPSILON__ || second <= 0 
+        || fabs(log(first)) < __DBL_EPSILON__)
+    {
+        fprintf(stderr, "Can't %s\n", __func__);
         return NAN;
+    }
 
-    return log(first) / log(second);
+    return log(second) / log(first);
 }
 operand_t math_LN        (const operand_t first, const operand_t second, FILE* out)
 {
     lassert(!is_invalid_ptr(out), "");
     (void)second;
 
-    if (first < 0)
+    if (first <= 0)
+    {
+        fprintf(stderr, "Can't %s\n", __func__);
         return NAN;
+    }
 
     return log(first);
 }

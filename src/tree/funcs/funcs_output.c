@@ -13,6 +13,7 @@
 #include "logger/liblogger.h"
 #include "utils/utils.h"
 #include "tree/operation/operation.h"
+#include "gnuplot/libgnuplot.h"
 
 static enum TreeError tree_print_data_(FILE* out, const tree_data_u data, enum NodeType type);
 
@@ -214,6 +215,63 @@ static enum TreeError tree_print_data_(FILE* out, const tree_data_u data, enum N
     default:
         return TREE_ERROR_UNKNOWN;
     }
+
+    return TREE_ERROR_SUCCESS;
+}
+
+enum TreeError tree_create_graphic(const tree_t* const tree, const char var, 
+                                   const char* const filename, char* const name,
+                                   const size_t npoints)
+{
+    TREE_VERIFY(tree);
+    lassert(!is_invalid_ptr(filename), "");
+    lassert(!is_invalid_ptr(name), "");
+    lassert('a' <= var && var <= 'z' && var != 'e', "");
+    lassert(npoints, "");
+
+    gnuplot_ctrl* handler = gnuplot_init();
+
+    double* xarr = calloc(npoints, sizeof(double));
+    if (!xarr)
+    {
+        perror("Can't calloc xarr");
+        return TREE_ERROR_STANDARD_ERRNO;
+    }
+    double* yarr = calloc(npoints, sizeof(double));
+    if (!yarr)
+    {
+        perror("Can't calloc xarr");
+        return TREE_ERROR_STANDARD_ERRNO;
+    }
+
+    gnuplot_resetplot(handler);
+
+    gnuplot_cmd(handler, "set terminal png");
+    gnuplot_cmd(handler, "set output '%s.png'", filename);
+
+    gnuplot_setstyle     (handler, "lines");
+    gnuplot_set_axislabel(handler, "x", "var label");
+    gnuplot_set_axislabel(handler, "y", "foo label");
+
+    for (size_t point = 0; point < npoints; ++point)
+    {
+        xarr[point] = (double)point - npoints/2;
+        tree_t* tree_val = tree_val_in_point(tree, var, (operand_t)point - npoints/2, stdout); //FIXME out fix
+        if (!tree_val || tree_val->type != NODE_TYPE_NUM)
+        {
+            fprintf(stderr, "Can't calculate val in point %zu\n", point);
+            if (tree_val) tree_dtor(tree_val);
+            return TREE_ERROR_NUM_DATA_INVALID;
+        }
+        yarr[point] = tree_val->data.num / 10000; 
+        tree_dtor(tree_val);
+    }
+
+    gnuplot_plot_coordinates(handler, xarr, yarr, (int)npoints, name);
+
+    gnuplot_close(handler);
+    free(xarr); xarr = NULL;
+    free(yarr); yarr = NULL;
 
     return TREE_ERROR_SUCCESS;
 }

@@ -5,9 +5,6 @@
 
 #include "tree/structs.h"
 
-// typedef operand_t (*op_foo_t) (const operand_t first,    const operand_t second, FILE* out);
-// typedef tree_t*   (*op_diff_t)(const tree_t* const tree, tree_t* const pt,       FILE* out);
-
 enum OpNotation
 {
     OP_NOTATION_LEFT     = 0,
@@ -21,9 +18,6 @@ typedef struct Operation
 
     const char*     name;
     const char*     tex_name;
-
-    // op_foo_t        foo;
-    // op_diff_t       diff;
 
     size_t          count_operands;
     enum OpNotation notation;
