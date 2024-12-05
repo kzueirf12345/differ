@@ -24,12 +24,12 @@ const char* flags_strerror(const enum FlagsError error);
         }                                                                                           \
     } while(0)
 
-// enum Mode
-// {
-//     MODE_DIFF       = 0,
-//     MODE_NDIFF      = 1,
-//     MODE_TAYLOR     = 2
-// };
+enum Mode
+{
+    MODE_NDIFF      = 1,
+    MODE_TAILOR     = 2,
+    MODE_TEST       = 1488
+};
 
 typedef struct FlagsObjs
 {
@@ -40,6 +40,8 @@ typedef struct FlagsObjs
 
     FILE* out_file;
     FILE*  in_file;
+
+    enum Mode mode;
 } flags_objs_t;
 
 enum FlagsError flags_objs_ctor (flags_objs_t* const flags_objs);

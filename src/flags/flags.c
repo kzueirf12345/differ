@@ -45,6 +45,8 @@ enum FlagsError flags_objs_ctor(flags_objs_t* const flags_objs)
     flags_objs->in_file  = NULL;
     flags_objs->out_file = NULL;
 
+    flags_objs->mode = MODE_NDIFF;
+
     return FLAGS_ERROR_SUCCESS;
 }
 
@@ -106,7 +108,7 @@ enum FlagsError generate_pdf_(flags_objs_t* const flags_objs)
         return FLAGS_ERROR_FAILURE;
     }
 
-    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "pdflatex --output-directory=%s %s > /dev/null", //FIXME simplify
+    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "pdflatex --output-directory=%s %s > /dev/null", //FIXME
                  pdf_directory, flags_objs->out_filename) < 0)
     {
         perror("Can't snprintf system cmd");
@@ -130,7 +132,7 @@ enum FlagsError flags_processing(flags_objs_t* const flags_objs,
     lassert(argc, "");
 
     int getopt_rez = 0;
-    while ((getopt_rez = getopt(argc, argv, "l:o:i:")) != -1)
+    while ((getopt_rez = getopt(argc, argv, "l:o:i:m:")) != -1)
     {
         switch (getopt_rez)
         {
@@ -164,6 +166,27 @@ enum FlagsError flags_processing(flags_objs_t* const flags_objs,
 
                 break;
             }
+            case 'm':
+            {
+                if (strcmp(optarg, "ndiff") == 0)
+                {
+                    flags_objs->mode = MODE_NDIFF;
+                }
+                else if (strcmp(optarg, "taylor") == 0)
+                {
+                    flags_objs->mode = MODE_TAILOR;
+                }
+                else if (strcmp(optarg, "test") == 0)
+                {
+                    flags_objs->mode = MODE_TEST;
+                }
+                else
+                {
+                    fprintf(stderr, "Unknown mode\n");
+                    return FLAGS_ERROR_FAILURE;
+                }
+                break;
+            }
 
             default:
             {
@@ -173,7 +196,11 @@ enum FlagsError flags_processing(flags_objs_t* const flags_objs,
         }
     }
 
-    lassert(strcmp(flags_objs->in_filename, flags_objs->out_filename) != 0, "");
+    if (strcmp(flags_objs->in_filename, flags_objs->out_filename) == 0)
+    {
+        fprintf(stderr, "Equal inout and output filename\n");
+        return FLAGS_ERROR_FAILURE;
+    }
 
     if (!(flags_objs->in_file = fopen(flags_objs->in_filename, "rb")))
     {

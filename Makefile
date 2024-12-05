@@ -54,7 +54,7 @@ BUILD_DIRS = $(DIRS:%=$(BUILD_DIR)/%)
 SOURCES = main.c utils/utils.c flags/flags.c tree/funcs/funcs_create.c tree/funcs/funcs_diff.c \
 		  tree/verification/verification.c tree/verification/dumb.c tree/operation/op_diff.c \
 		  tree/operation/op_math.c tree/operation/operation.c tree/funcs/funcs_output.c \
-		  tree/funcs/funcs_input.c tree/funcs/funcs_simplify.c
+		  tree/funcs/funcs_input.c tree/funcs/funcs_simplify.c flags/mode_funcs.c
 
 SOURCES_REL_PATH = $(SOURCES:%=$(SRC_DIR)/%)
 OBJECTS_REL_PATH = $(SOURCES:%.c=$(BUILD_DIR)/%.o)

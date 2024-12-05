@@ -2,13 +2,15 @@
 #include <locale.h>
 #include <stdlib.h>
 
-#include "flags/flags.h"
+#include "flags/mode_funcs.h"
 #include "logger/liblogger.h"
 #include "tree/funcs/funcs.h"
 #include "tree/verification/dumb.h"
 
 int init_all(flags_objs_t* const flags_objs, const int argc, char* const * argv);
 int dtor_all(flags_objs_t* const flags_objs);
+
+int do_program(flags_objs_t* const flags_objs);
 
 int main(const int argc, char* const argv[])
 {
@@ -20,86 +22,12 @@ int main(const int argc, char* const argv[])
         return EXIT_FAILURE;
     }
 
-    tree_t* tree1 = 
-        tree_ctor((tree_data_u){.op = OP_TYPE_DIV}, NODE_TYPE_OP, NULL,
-            tree_ctor((tree_data_u){.op = OP_TYPE_SUB}, NODE_TYPE_OP, NULL,
-                tree_ctor((tree_data_u){.num = 1 }, NODE_TYPE_VAR, NULL, NULL, NULL),
-                tree_ctor((tree_data_u){.num = 3 }, NODE_TYPE_NUM, NULL, NULL, NULL)),
-            tree_ctor((tree_data_u){.op = OP_TYPE_SUM}, NODE_TYPE_OP, NULL,
-                tree_ctor((tree_data_u){.num = 1000 }, NODE_TYPE_NUM, NULL, NULL, NULL),
-                tree_ctor((tree_data_u){.num = 7 },    NODE_TYPE_NUM, NULL, NULL, NULL)));
-
-    tree_fill_pt(tree1, NULL);
-
-    tree_t* tree1_diff = tree_diff(tree1, NULL, 'x', stdout);
-
-    tree_t* tree2 = NULL;
-    TREE_ERROR_HANDLE(tree_read(flags_objs.in_filename, &tree2),
-                                       tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-    );
-
-    TREE_ERROR_HANDLE(tree_simplify(&tree2, stdout),
-                      tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-    );
-
-    tree_t* tree2_val = tree_val_in_point(tree2, 'x', 0.5, stdout);
-    if (tree2_val == NULL)
+    if (do_program(&flags_objs))
     {
-        fprintf(stderr, "Can't tree_val_in_point\n");
-                      tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
+        fprintf(stderr, "Heppend any zalupa\n");
+        dtor_all(&flags_objs);
         return EXIT_FAILURE;
     }
-
-    tree_t* tree2_diff = tree_diff(tree2, NULL, 'x', stdout);
-
-    tree_t* tree2_ndiff = tree_ndiff(tree2, 1, 'x', stdout);
-
-    tree_t* tree2_monom = tree_taylor_polynom(tree2, 10, 'x', 0.1, stdout);
-
-    TREE_ERROR_HANDLE(tree_create_graphic(tree2_monom, 'x', "assets/polynom_sin", "sin", 1000),
-tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-tree_dtor(tree2_val);tree_dtor(tree2_ndiff);tree_dtor(tree2_monom);
-    );
-
-    TREE_ERROR_HANDLE(tree_simplify(&tree2_diff, stdout),
-tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-tree_dtor(tree2_val);tree_dtor(tree2_ndiff);tree_dtor(tree2_monom);
-    );
-
-
-    TREE_ERROR_HANDLE(tree_print_tex(flags_objs.out_file, tree2),          
-tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-tree_dtor(tree2_val);tree_dtor(tree2_ndiff);tree_dtor(tree2_monom);
-    );
-
-    TREE_ERROR_HANDLE(tree_print_tex(flags_objs.out_file, tree2_val),
-tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-tree_dtor(tree2_val);tree_dtor(tree2_ndiff);tree_dtor(tree2_monom);
-    );
-
-    TREE_ERROR_HANDLE(tree_print_tex(flags_objs.out_file, tree2_diff),          
-tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-tree_dtor(tree2_val);tree_dtor(tree2_ndiff);tree_dtor(tree2_monom);
-    );
-
-    TREE_ERROR_HANDLE(tree_print_tex(flags_objs.out_file, tree2_ndiff),          
-tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-tree_dtor(tree2_val);tree_dtor(tree2_ndiff);tree_dtor(tree2_monom);
-    );
-
-    TREE_ERROR_HANDLE(tree_print_tex(flags_objs.out_file, tree2_monom),          
-tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
-tree_dtor(tree2_val);tree_dtor(tree2_ndiff);tree_dtor(tree2_monom);
-    );
-
-    tree_dtor(tree1);
-    tree_dtor(tree1_diff);
-    tree_dtor(tree2);
-    tree_dtor(tree2_diff);
-    tree_dtor(tree2_val);
-    tree_dtor(tree2_ndiff);
-    tree_dtor(tree2_monom);
-
     
     if (dtor_all(&flags_objs))
     {
@@ -107,6 +35,25 @@ tree_dtor(tree2_val);tree_dtor(tree2_ndiff);tree_dtor(tree2_monom);
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
+}
+
+int do_program(flags_objs_t* const flags_objs)
+{
+    lassert(!is_invalid_ptr(flags_objs), "");
+
+    switch(flags_objs->mode)
+    {
+        case MODE_NDIFF:    return mode_ndiff (flags_objs);
+        case MODE_TAILOR:   return mode_taylor(flags_objs);
+        case MODE_TEST:     return mode_test  (flags_objs);
+
+        default:
+            fprintf(stderr, "Unknown mode in flags_objs\n");
+            return EXIT_FAILURE;
+    }
+
+    fprintf(stderr, "KUZYA PIPEC 2\n");
+    return EXIT_FAILURE;
 }
 
 int logger_init(char* const log_folder);
