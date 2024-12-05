@@ -36,6 +36,14 @@ enum TreeError tree_print_tex (FILE* out, const tree_t* const tree)
 
     return TREE_ERROR_SUCCESS;
 }
+
+#define _IS_OP     (tree->type == NODE_TYPE_OP)
+#define _IS_UNARY  (_IS_OP && OPERATIONS[tree->data.op].count_operands == 1)
+#define _IS_BINARY (_IS_OP && OPERATIONS[tree->data.op].count_operands == 2)
+#define _IS_PREF   (_IS_OP && OPERATIONS[tree->data.op].notation == OP_NOTATION_LEFT)
+#define _IS_INF    (_IS_OP && OPERATIONS[tree->data.op].notation == OP_NOTATION_MIDDLE)
+#define _IS_POST   (_IS_OP && OPERATIONS[tree->data.op].notation == OP_NOTATION_RIGHT)
+
 enum TreeError tree_print_tex_recursive_(FILE* out, const tree_t* const tree)
 {
     if (!tree) return TREE_ERROR_SUCCESS;
@@ -50,54 +58,90 @@ enum TreeError tree_print_tex_recursive_(FILE* out, const tree_t* const tree)
         return TREE_ERROR_STANDARD_ERRNO;
     }
 
-    if (tree->type == NODE_TYPE_OP && OPERATIONS[tree->data.op].notation == OP_NOTATION_LEFT)
+    if (_IS_PREF && fprintf(out, "%s{", OPERATIONS[tree->data.op].tex_name) <= 0)
     {
-        if (fprintf(out, "%s{", OPERATIONS[tree->data.op].tex_name) <= 0)
-        {
-            perror("Can't fprintf left notation op");
-            return TREE_ERROR_STANDARD_ERRNO;
-        }
+        perror("Can't fprintf left notation op");
+        return TREE_ERROR_STANDARD_ERRNO;
     }
 
     TREE_ERROR_HANDLE(tree_print_tex_recursive_(out, tree->lt));
 
-    if (tree->type == NODE_TYPE_OP && OPERATIONS[tree->data.op].notation == OP_NOTATION_LEFT)
+    if (_IS_PREF && fputs("}", out) < 0)
     {
-        if (fputs("}", out) < 0)
-        {
-            perror("Can't fputs } left nontation op 1");
-            return TREE_ERROR_STANDARD_ERRNO;
-        }
+        perror("Can't fputs } left nontation op 1");
+        return TREE_ERROR_STANDARD_ERRNO;
     }
 
-    if (tree->type != NODE_TYPE_OP || OPERATIONS[tree->data.op].notation != OP_NOTATION_LEFT)
+    if (!_IS_OP || _IS_INF)
     {
         TREE_ERROR_HANDLE(tree_print_data_(out, tree->data, tree->type));
     }
 
-    if (tree->type == NODE_TYPE_OP && OPERATIONS[tree->data.op].count_operands == 2)
+    if (_IS_BINARY && fputs("{", out) < 0)
     {
-        if (fputs("{", out) < 0)
-        {
-            perror("Can't fputs { left nontation op 2");
-            return TREE_ERROR_STANDARD_ERRNO;
-        }
+        perror("Can't fputs { left nontation op 2");
+        return TREE_ERROR_STANDARD_ERRNO;
     }
 
     TREE_ERROR_HANDLE(tree_print_tex_recursive_(out, tree->rt));
 
-    if (tree->type == NODE_TYPE_OP && OPERATIONS[tree->data.op].count_operands == 2)
+    if (_IS_BINARY && fputs("}", out) < 0)
     {
-        if (fputs("}", out) < 0)
-        {
-            perror("Can't fputs } left nontation op 2");
-            return TREE_ERROR_STANDARD_ERRNO;
-        }
+        perror("Can't fputs } left nontation op 2");
+        return TREE_ERROR_STANDARD_ERRNO;
     } 
 
     if (do_add_braket && fputs("\\right)", out) < 0)
     {
         perror("Can't fprintf )");
+        return TREE_ERROR_STANDARD_ERRNO;
+    }
+
+    return TREE_ERROR_SUCCESS;
+}
+
+static enum TreeError tree_strncat_data_(char* str, const size_t str_size, const tree_data_u data, 
+                                         enum NodeType type);
+
+enum TreeError tree_to_str(const tree_t* const tree, char* const str, const size_t str_size)
+{
+    if (!tree) return TREE_ERROR_SUCCESS;
+
+    TREE_VERIFY(tree);
+    lassert(!is_invalid_ptr(str), "");
+
+    if (!strncat(str, "(", str_size))
+    {
+        perror("Can't strncat (");
+        return TREE_ERROR_STANDARD_ERRNO;
+    }
+
+    if (_IS_PREF && tree->data.op != OP_TYPE_DIV)
+    {
+        if (!strncat(str, OPERATIONS[tree->data.op].name, str_size))
+        {
+            perror("Can't strncat left notation op");
+            return TREE_ERROR_STANDARD_ERRNO;
+        }
+        if (tree->data.op == OP_TYPE_LOG && !strncat(str, "_", str_size))
+        {
+            perror("Can't strncat left notation op");
+            return TREE_ERROR_STANDARD_ERRNO;
+        }
+    }
+
+    TREE_ERROR_HANDLE(tree_to_str(tree->lt, str, str_size));
+
+    if (!_IS_OP || _IS_INF || tree->data.op == OP_TYPE_DIV)
+    {
+        TREE_ERROR_HANDLE(tree_strncat_data_(str, str_size, tree->data, tree->type));
+    }
+
+    TREE_ERROR_HANDLE(tree_to_str(tree->rt, str, str_size));
+
+    if (!strncat(str, ")", str_size))
+    {
+        perror("Can't strncat )");
         return TREE_ERROR_STANDARD_ERRNO;
     }
 
@@ -176,6 +220,49 @@ bool add_braket(const tree_t* const tree)
     return true;
 }
 
+static enum TreeError tree_strncat_data_(char* str, const size_t str_size, const tree_data_u data, 
+                                         enum NodeType type)
+{
+    lassert(!is_invalid_ptr(str), "");
+
+    switch (type)
+    {
+    case NODE_TYPE_NUM:
+        char temp[DATA_STR_MAX_SIZE] = {};
+        if (snprintf(temp, DATA_STR_MAX_SIZE, "%f", data.num) < 0)
+        {
+            perror("Can't snprintf data");
+            return TREE_ERROR_STANDARD_ERRNO;
+        }
+        *strchr(temp, ',') = '.';
+        if (!strncat(str, temp, str_size))
+        {
+            perror("Can't strncat data e");
+            return TREE_ERROR_STANDARD_ERRNO;
+        }
+        break;
+
+    case NODE_TYPE_OP:
+        if (!strncat(str, (data.op == OP_TYPE_POW ? "**" : OPERATIONS[data.op].name), str_size))
+        {
+            perror("Can't strncat op");
+            return TREE_ERROR_STANDARD_ERRNO;
+        }
+        break;
+
+    case NODE_TYPE_VAR:
+        const size_t size = strlen(str);
+        str[size] = data.var;
+        str[size+1] = '\0';
+        break;
+    
+    default:
+        return TREE_ERROR_UNKNOWN;
+    }
+
+    return TREE_ERROR_SUCCESS;
+}
+
 static enum TreeError tree_print_data_(FILE* out, const tree_data_u data, enum NodeType type)
 {
     lassert(!is_invalid_ptr(out), "");
@@ -219,6 +306,8 @@ static enum TreeError tree_print_data_(FILE* out, const tree_data_u data, enum N
     return TREE_ERROR_SUCCESS;
 }
 
+
+#define PLOT_EQ_SIZE 4096
 enum TreeError tree_create_graphic(const tree_t* const tree, const char var, 
                                    const char* const filename, char* const name,
                                    const size_t npoints)
@@ -248,26 +337,17 @@ enum TreeError tree_create_graphic(const tree_t* const tree, const char var,
 
     gnuplot_cmd(handler, "set terminal png");
     gnuplot_cmd(handler, "set output '%s.png'", filename);
+    gnuplot_cmd(handler, "set xrange [-10:10]");
+    gnuplot_cmd(handler, "set yrange [-20:20]");
 
     gnuplot_setstyle     (handler, "lines");
     gnuplot_set_axislabel(handler, "x", "var label");
     gnuplot_set_axislabel(handler, "y", "foo label");
 
-    for (size_t point = 0; point < npoints; ++point)
-    {
-        xarr[point] = (double)point - npoints/2;
-        tree_t* tree_val = tree_val_in_point(tree, var, (operand_t)point - npoints/2, stdout); //FIXME out fix
-        if (!tree_val || tree_val->type != NODE_TYPE_NUM)
-        {
-            fprintf(stderr, "Can't calculate val in point %zu\n", point);
-            if (tree_val) tree_dtor(tree_val);
-            return TREE_ERROR_NUM_DATA_INVALID;
-        }
-        yarr[point] = tree_val->data.num / 10000; 
-        tree_dtor(tree_val);
-    }
-
-    gnuplot_plot_coordinates(handler, xarr, yarr, (int)npoints, name);
+    char plot_eq[PLOT_EQ_SIZE] = {};
+    TREE_ERROR_HANDLE(tree_to_str(tree, plot_eq, PLOT_EQ_SIZE), free(xarr); free(yarr););
+    // fprintf(stderr, "plot_eq: %s\n", plot_eq);
+    gnuplot_cmd(handler, "plot %s, sin(x)", plot_eq);
 
     gnuplot_close(handler);
     free(xarr); xarr = NULL;

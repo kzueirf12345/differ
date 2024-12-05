@@ -54,9 +54,9 @@ int main(const int argc, char* const argv[])
 
     tree_t* tree2_ndiff = tree_ndiff(tree2, 1, 'x', stdout);
 
-    tree_t* tree2_monom = tree_taylor_polynom(tree2, 7, 'x', 0, stdout);
+    tree_t* tree2_monom = tree_taylor_polynom(tree2, 10, 'x', 0.1, stdout);
 
-    TREE_ERROR_HANDLE(tree_create_graphic(tree2_monom, 'x', "assets/monom_graphic", "monomus", 100),
+    TREE_ERROR_HANDLE(tree_create_graphic(tree2_monom, 'x', "assets/polynom_sin", "sin", 1000),
 tree_dtor(tree2_diff);tree_dtor(tree2);tree_dtor(tree1_diff);tree_dtor(tree1);dtor_all(&flags_objs);
 tree_dtor(tree2_val);tree_dtor(tree2_ndiff);tree_dtor(tree2_monom);
     );
