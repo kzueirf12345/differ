@@ -10,7 +10,7 @@ enum NodeType
     NODE_TYPE_OP  = 2
 };
 
-#define OPERATION_HANDLE(_type, _name, _tex_name, _count_operands, _notation, _num)                 \
+#define OPERATION_HANDLE(_type, _name, _tex_name, temp, _count_operands, _notation, _num)                 \
         OP_TYPE_##_type = _num,
 
 enum OpType

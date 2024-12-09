@@ -25,7 +25,7 @@ const char* node_type_to_str(const enum NodeType type)
     return "UNKNOWN_NODE_TYPE";
 }
 
-#define OPERATION_HANDLE(_type, _name, _tex_name, _count_operands, _notation, _num)                 \
+#define OPERATION_HANDLE(_type, _name, _tex_name, temp, _count_operands, _notation, _num)                 \
         if (strncmp(_name, str, sizeof(_name) - 1) == 0) return OP_TYPE_##_type;
 
 enum OpType str_to_op_type(const char* const str)

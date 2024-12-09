@@ -118,7 +118,7 @@ enum TreeError tree_to_str(const tree_t* const tree, char* const str, const size
 
     if (_IS_PREF && tree->data.op != OP_TYPE_DIV)
     {
-        if (!strncat(str, OPERATIONS[tree->data.op].name, str_size))
+        if (!strncat(str, OPERATIONS[tree->data.op].graph_name, str_size))
         {
             perror("Can't strncat left notation op");
             return TREE_ERROR_STANDARD_ERRNO;
@@ -243,7 +243,7 @@ static enum TreeError tree_strncat_data_(char* str, const size_t str_size, const
         break;
 
     case NODE_TYPE_OP:
-        if (!strncat(str, (data.op == OP_TYPE_POW ? "**" : OPERATIONS[data.op].name), str_size))
+        if (!strncat(str, (data.op == OP_TYPE_POW ? "**" : OPERATIONS[data.op].graph_name), str_size))
         {
             perror("Can't strncat op");
             return TREE_ERROR_STANDARD_ERRNO;
@@ -308,30 +308,15 @@ static enum TreeError tree_print_data_(FILE* out, const tree_data_u data, enum N
 
 
 #define PLOT_EQ_SIZE 4096
-enum TreeError tree_create_graphic(const tree_t* const tree, const char var, 
-                                   const char* const filename, char* const name,
-                                   const size_t npoints)
+enum TreeError tree_create_graphic(const tree_t* const tree, const tree_t* const subtree,
+                                   const char var, const char* const filename, char* const name)
 {
     TREE_VERIFY(tree);
     lassert(!is_invalid_ptr(filename), "");
     lassert(!is_invalid_ptr(name), "");
     lassert('a' <= var && var <= 'z' && var != 'e', "");
-    lassert(npoints, "");
 
     gnuplot_ctrl* handler = gnuplot_init();
-
-    double* xarr = calloc(npoints, sizeof(double));
-    if (!xarr)
-    {
-        perror("Can't calloc xarr");
-        return TREE_ERROR_STANDARD_ERRNO;
-    }
-    double* yarr = calloc(npoints, sizeof(double));
-    if (!yarr)
-    {
-        perror("Can't calloc xarr");
-        return TREE_ERROR_STANDARD_ERRNO;
-    }
 
     gnuplot_resetplot(handler);
 
@@ -345,13 +330,13 @@ enum TreeError tree_create_graphic(const tree_t* const tree, const char var,
     gnuplot_set_axislabel(handler, "y", "foo label");
 
     char plot_eq[PLOT_EQ_SIZE] = {};
-    TREE_ERROR_HANDLE(tree_to_str(tree, plot_eq, PLOT_EQ_SIZE), free(xarr); free(yarr););
-    // fprintf(stderr, "plot_eq: %s\n", plot_eq);
-    gnuplot_cmd(handler, "plot %s, sin(x)", plot_eq);
+    TREE_ERROR_HANDLE(tree_to_str(tree, plot_eq, PLOT_EQ_SIZE));
+    char sub_plot_eq[PLOT_EQ_SIZE] = {};
+    TREE_ERROR_HANDLE(tree_to_str(subtree, sub_plot_eq, PLOT_EQ_SIZE));
+
+    gnuplot_cmd(handler, "plot %s, %s", plot_eq, sub_plot_eq);
 
     gnuplot_close(handler);
-    free(xarr); xarr = NULL;
-    free(yarr); yarr = NULL;
 
     return TREE_ERROR_SUCCESS;
 }

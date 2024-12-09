@@ -129,8 +129,8 @@ static enum TreeError init_str_size_from_file_ (size_t* const str_size, const in
 
 
 #define _CUR_IND desc_state->ind
-#define _SHIFT   ++desc_state->ind
-#define _CUR_SYM desc_state->str[desc_state->ind]
+#define _SHIFT   ++_CUR_IND
+#define _CUR_SYM desc_state->str[_CUR_IND]
 
 #define _RET_FAILURE                                                                                \
         fprintf(stderr, "Can't %s line: %d\n", __func__, __LINE__);                                 \

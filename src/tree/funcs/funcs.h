@@ -26,9 +26,8 @@ tree_t* tree_taylor_polynom(const tree_t* const tree, const size_t order, const 
 enum TreeError tree_to_str   (const tree_t* const tree, char* const str, const size_t str_size);
 enum TreeError tree_print_tex(FILE* out, const tree_t* const tree);
 enum TreeError tree_read     (const char* const in_name, tree_t** tree);
-enum TreeError tree_create_graphic(const tree_t* const tree, const char var, 
-                                   const char* const filename, char* const name,
-                                   const size_t npoints);
+enum TreeError tree_create_graphic(const tree_t* const tree, const tree_t* const subtree,
+                                   const char var, const char* const filename, char* const name);
 
 enum TreeError tree_simplify(tree_t** tree, FILE* out);
 

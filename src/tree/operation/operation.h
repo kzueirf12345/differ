@@ -18,6 +18,7 @@ typedef struct Operation
 
     const char*     name;
     const char*     tex_name;
+    const char*     graph_name;
 
     size_t          count_operands;
     enum OpNotation notation;

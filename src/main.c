@@ -2,7 +2,8 @@
 #include <locale.h>
 #include <stdlib.h>
 
-#include "flags/mode_funcs.h"
+#include "mode_funcs.h"
+#include "flags/flags.h"
 #include "logger/liblogger.h"
 #include "tree/funcs/funcs.h"
 #include "tree/verification/dumb.h"

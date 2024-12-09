@@ -108,7 +108,7 @@ enum FlagsError generate_pdf_(flags_objs_t* const flags_objs)
         return FLAGS_ERROR_FAILURE;
     }
 
-    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "pdflatex --output-directory=%s %s > /dev/null", //FIXME
+    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "pdflatex --output-directory=%s %s", //FIXME
                  pdf_directory, flags_objs->out_filename) < 0)
     {
         perror("Can't snprintf system cmd");
@@ -217,8 +217,21 @@ enum FlagsError flags_processing(flags_objs_t* const flags_objs,
     fprintf(flags_objs->out_file, 
         "\\documentclass[a4paper]{article}\n"
         "\\usepackage{amsmath}\n"
+        "\\usepackage[T2A]{fontenc}\n"
+        "\\usepackage[english, russian]{babel}\n"
+        "\\usepackage{mathtools}\n"
+        "\\usepackage{amsfonts}\n"              
+        "\\usepackage{graphicx}\n"  
+        "\\usepackage{wrapfig}\n"
         "\n"
-        "\\begin{document}\n");
+        "\\title{Что-то дифферинцируется, а что-то нет, но это не плохо)}\n"
+        "\\author{Владимир Швабра}\n"
+        "\\date{\\today}"            
+        "\n"
+        "\\begin{document}\n"
+        "\\maketitle\n"
+        "\\newpage\n"
+        "\n");
 
     return FLAGS_ERROR_SUCCESS;
 }

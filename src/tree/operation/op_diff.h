@@ -5,7 +5,7 @@
 
 #include "tree/structs.h"
 
-#define OPERATION_HANDLE(_type, _name, _tex_name, _count_operands, _notation, _num)                 \
+#define OPERATION_HANDLE(_type, _name, _tex_name, temp, _count_operands, _notation, _num)                 \
         tree_t* diff_##_type (const tree_t* const tree, tree_t* const pt, const char diff_var,      \
                               FILE* out);
 

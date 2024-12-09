@@ -9,6 +9,7 @@
 #define _OPERATION(name, lt, rt) \
         tree_ctor((tree_data_u){.op = OP_TYPE_##name}, NODE_TYPE_OP, NULL, lt, rt)
 
+// FIXME codegen
 #define _SUM(lt, rt)    _OPERATION(SUM,     lt, rt)
 #define _SUB(lt, rt)    _OPERATION(SUB,     lt, rt)
 #define _MUL(lt, rt)    _OPERATION(MUL,     lt, rt)

@@ -28,7 +28,7 @@ tree_t* tree_copy(const tree_t* const tree, tree_t* const pt)
     return new_tree;
 }
 
-#define OPERATION_HANDLE(_type, _name, _tex_name, _count_operands, _notation, _num)                 \
+#define OPERATION_HANDLE(_type, _name, _tex_name, temp, _count_operands, _notation, _num)                 \
         case OP_TYPE_##_type: new_tree = diff_##_type(tree, pt, diff_var, out); break;
     
 
