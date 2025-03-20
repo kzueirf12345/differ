@@ -96,15 +96,15 @@ int logger_init(char* const log_folder)
 {
     lassert(log_folder, "");
 
-    char logout_filename[FILENAME_MAX_SIZE] = {};
-    if (snprintf(logout_filename, FILENAME_MAX_SIZE, "%s%s", log_folder, LOGOUT_FILENAME) <= 0)
+    char logout_filename[FILENAME_MAX] = {};
+    if (snprintf(logout_filename, FILENAME_MAX, "%s%s", log_folder, LOGOUT_FILENAME) <= 0)
     {
         perror("Can't snprintf logout_filename");
         return EXIT_FAILURE;
     }
 
-    char dumb_filename[FILENAME_MAX_SIZE] = {};
-    if (snprintf(dumb_filename, FILENAME_MAX_SIZE, "%s%s", log_folder, DUMB_FILENAME) <= 0)
+    char dumb_filename[FILENAME_MAX] = {};
+    if (snprintf(dumb_filename, FILENAME_MAX, "%s%s", log_folder, DUMB_FILENAME) <= 0)
     {
         perror("Can't snprintf dumb_filename");
         return EXIT_FAILURE;

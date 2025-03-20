@@ -24,19 +24,19 @@ enum FlagsError flags_objs_ctor(flags_objs_t* const flags_objs)
 {
     lassert(!is_invalid_ptr(flags_objs), "");
 
-    if (!strncpy(flags_objs->log_folder, "./log/", FILENAME_MAX_SIZE))
+    if (!strncpy(flags_objs->log_folder, "./log/", FILENAME_MAX))
     {
         perror("Can't strncpy flags_objs->log_folder");
         return FLAGS_ERROR_SUCCESS;
     }
 
-    if (!strncpy(flags_objs->in_filename, "./assets/input.txt", FILENAME_MAX_SIZE))
+    if (!strncpy(flags_objs->in_filename, "./assets/input.txt", FILENAME_MAX))
     {
         perror("Can't strncpy flags_objs->log_folder");
         return FLAGS_ERROR_SUCCESS;
     }
 
-    if (!strncpy(flags_objs->out_filename, "./assets/output.tex", FILENAME_MAX_SIZE))
+    if (!strncpy(flags_objs->out_filename, "./assets/output.tex", FILENAME_MAX))
     {
         perror("Can't strncpy flags_objs->log_folder");
         return FLAGS_ERROR_SUCCESS;
@@ -84,9 +84,9 @@ enum FlagsError generate_pdf_(flags_objs_t* const flags_objs)
 {
     lassert(!is_invalid_ptr(flags_objs), "");
 
-    char pdf_directory[FILENAME_MAX_SIZE] = {};
+    char pdf_directory[FILENAME_MAX] = {};
 
-    if (!strncpy(pdf_directory, flags_objs->out_filename, FILENAME_MAX_SIZE))
+    if (!strncpy(pdf_directory, flags_objs->out_filename, FILENAME_MAX))
     {
         perror("Can't strncpy pdf_directory");
         return FLAGS_ERROR_FAILURE;
@@ -94,9 +94,9 @@ enum FlagsError generate_pdf_(flags_objs_t* const flags_objs)
 
     *strchr(pdf_directory, '.') = '\0';
 
-    char system_cmd[FILENAME_MAX_SIZE] = {};
+    char system_cmd[FILENAME_MAX] = {};
 
-    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "mkdir -p %s", pdf_directory) < 0)
+    if (snprintf(system_cmd, FILENAME_MAX, "mkdir -p %s", pdf_directory) < 0)
     {
         perror("Can't snprintf system cmd mkdir");
         return FLAGS_ERROR_FAILURE;
@@ -108,7 +108,7 @@ enum FlagsError generate_pdf_(flags_objs_t* const flags_objs)
         return FLAGS_ERROR_FAILURE;
     }
 
-    if (snprintf(system_cmd, FILENAME_MAX_SIZE, "pdflatex --output-directory=%s %s", //FIXME
+    if (snprintf(system_cmd, FILENAME_MAX, "pdflatex --output-directory=%s %s", //FIXME
                  pdf_directory, flags_objs->out_filename) < 0)
     {
         perror("Can't snprintf system cmd");
@@ -138,7 +138,7 @@ enum FlagsError flags_processing(flags_objs_t* const flags_objs,
         {
             case 'l':
             {
-                if (!strncpy(flags_objs->log_folder, optarg, FILENAME_MAX_SIZE))
+                if (!strncpy(flags_objs->log_folder, optarg, FILENAME_MAX))
                 {
                     perror("Can't strncpy flags_objs->log_folder");
                     return FLAGS_ERROR_FAILURE;
@@ -148,7 +148,7 @@ enum FlagsError flags_processing(flags_objs_t* const flags_objs,
             }
             case 'o':
             {
-                if (!strncpy(flags_objs->out_filename, optarg, FILENAME_MAX_SIZE))
+                if (!strncpy(flags_objs->out_filename, optarg, FILENAME_MAX))
                 {
                     perror("Can't strncpy flags_objs->out_filename");
                     return FLAGS_ERROR_FAILURE;
@@ -158,7 +158,7 @@ enum FlagsError flags_processing(flags_objs_t* const flags_objs,
             }
             case 'i':
             {
-                if (!strncpy(flags_objs->in_filename, optarg, FILENAME_MAX_SIZE))
+                if (!strncpy(flags_objs->in_filename, optarg, FILENAME_MAX))
                 {
                     perror("Can't strncpy flags_objs->in_filename");
                     return FLAGS_ERROR_FAILURE;
@@ -225,7 +225,7 @@ enum FlagsError flags_processing(flags_objs_t* const flags_objs,
         "\\usepackage{wrapfig}\n"
         "\n"
         "\\title{Что-то дифферинцируется, а что-то нет, но это не плохо)}\n"
-        "\\author{Владимир Швабра}\n"
+        "\\author{Владимир the(по указанию деда) Швабра}\n"
         "\\date{\\today}"            
         "\n"
         "\\begin{document}\n"

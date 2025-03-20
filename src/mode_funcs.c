@@ -76,10 +76,10 @@ int mode_ndiff (flags_objs_t* const flags_objs)
 
     fprintf(flags_objs->out_file, "\\subsection{Графики:}\n"); 
 
-    char source_filename[FILENAME_MAX_SIZE] = {};
+    char source_filename[FILENAME_MAX] = {};
 
-    if (!strncat(strncat(source_filename, flags_objs->out_filename, FILENAME_MAX_SIZE),
-                 "_graphic", FILENAME_MAX_SIZE))
+    if (!strncat(strncat(source_filename, flags_objs->out_filename, FILENAME_MAX),
+                 "_graphic", FILENAME_MAX))
     {
         perror("Can't strncat graphic_filename");
                                                             tree_dtor(tree_deriv);tree_dtor(source);
@@ -117,13 +117,16 @@ int mode_taylor(flags_objs_t* const flags_objs)
     } 
     while (diff_var < 'a' || 'z' < diff_var || diff_var == 'e');
 
-    operand_t diff_dot = 0;
+    operand_t diff_dot = 0.5;
     do
     {
-        scanf("%*[^\n]");
+        // scanf("%*[^\n]");
         printf("Введите точку, относительлно которой будет приближение:\n");
     } 
     while (scanf("%lf", &diff_dot) <= 0);
+    // scanf("%lf", &diff_dot);
+
+    // fprintf(stderr, "point: %lf\n", diff_dot);
 
     size_t diff_order = 0;
     do
@@ -172,10 +175,10 @@ int mode_taylor(flags_objs_t* const flags_objs)
 
     fprintf(flags_objs->out_file, "\\subsection{Графики:}\n"); 
 
-    char source_filename[FILENAME_MAX_SIZE] = {};
+    char source_filename[FILENAME_MAX] = {};
 
-    if (!strncat(strncat(source_filename, flags_objs->out_filename, FILENAME_MAX_SIZE),
-                 "_graphic", FILENAME_MAX_SIZE))
+    if (!strncat(strncat(source_filename, flags_objs->out_filename, FILENAME_MAX),
+                 "_graphic", FILENAME_MAX))
     {
         perror("Can't strncat graphic_filename");
                                                                 tree_dtor(taylor);tree_dtor(source);

@@ -322,19 +322,24 @@ enum TreeError tree_create_graphic(const tree_t* const tree, const tree_t* const
 
     gnuplot_cmd(handler, "set terminal png");
     gnuplot_cmd(handler, "set output '%s.png'", filename);
-    gnuplot_cmd(handler, "set xrange [-10:10]");
-    gnuplot_cmd(handler, "set yrange [-20:20]");
+    gnuplot_cmd(handler, "set xrange [-1:1]");
+    // gnuplot_cmd(handler, "set yrange [-30:30]");
 
     gnuplot_setstyle     (handler, "lines");
     gnuplot_set_axislabel(handler, "x", "var label");
     gnuplot_set_axislabel(handler, "y", "foo label");
+
+    // tree_dumb(tree);
 
     char plot_eq[PLOT_EQ_SIZE] = {};
     TREE_ERROR_HANDLE(tree_to_str(tree, plot_eq, PLOT_EQ_SIZE));
     char sub_plot_eq[PLOT_EQ_SIZE] = {};
     TREE_ERROR_HANDLE(tree_to_str(subtree, sub_plot_eq, PLOT_EQ_SIZE));
 
+    
+
     gnuplot_cmd(handler, "plot %s, %s", plot_eq, sub_plot_eq);
+    // fprintf(stderr, "plot %s, %s\n", plot_eq, sub_plot_eq);
 
     gnuplot_close(handler);
 

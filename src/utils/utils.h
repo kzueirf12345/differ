@@ -18,8 +18,6 @@
 #define IF_ELSE_DEBUG(smth, other_smth) other_smth
 #endif /*NDEBUG*/
 
-#define FILENAME_MAX_SIZE 256
-
 char* to_lower(char* const str);
 char* to_upper(char* const str);
 
